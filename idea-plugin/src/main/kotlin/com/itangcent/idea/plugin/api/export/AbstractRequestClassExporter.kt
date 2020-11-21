@@ -5,7 +5,8 @@ import com.intellij.psi.*
 import com.itangcent.common.constant.Attrs
 import com.itangcent.common.constant.HttpMethod
 import com.itangcent.common.exception.ProcessCanceledException
-import com.itangcent.common.kit.*
+import com.itangcent.common.kit.KVUtils
+import com.itangcent.common.kit.KitUtils
 import com.itangcent.common.logger.traceError
 import com.itangcent.common.model.*
 import com.itangcent.common.utils.*
@@ -128,6 +129,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                         val method = explicitMethod.psi()
                         if (isApi(method) && methodFilter?.checkMethod(method) != false) {
                             try {
+                                //kv.put(method.)
                                 exportMethodApi(cls, explicitMethod, kv, docHandle)
                             } catch (e: Exception) {
                                 logger.traceError("error to export api from method:" + method.name, e)
@@ -460,7 +462,10 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
     private fun processMethodParameters(method: ExplicitMethod, request: Request) {
 
         val params = method.getParameters()
-
+        if (params.size != 1) {
+            logger!!.error("仅支持一个参数...作为HttpRequest,API元数据文档 https://www.yuque.com/chenshun00/sbny2o/rxutbo");
+            throw RuntimeException("仅支持一个参数...作为HttpRequest,API元数据文档 https://www.yuque.com/chenshun00/sbny2o/rxutbo")
+        }
         if (params.isNotEmpty()) {
 
             val paramDocComment = extractParamComment(method.psi())
@@ -470,7 +475,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                 if (ruleComputer!!.computer(ClassExportRuleKeys.PARAM_IGNORE, param) == true) {
                     continue
                 }
-
+                val requestName = param.getType()!!.name()
+                requestHelper!!.setReq(request, requestName)
                 ruleComputer.computer(ClassExportRuleKeys.PARAM_BEFORE, param)
 
                 try {

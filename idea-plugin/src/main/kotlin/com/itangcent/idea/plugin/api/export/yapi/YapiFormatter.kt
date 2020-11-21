@@ -242,7 +242,7 @@ open class YapiFormatter {
     fun request2Item(request: Request): HashMap<String, Any?> {
 
         val item: HashMap<String, Any?> = HashMap()
-
+        item["req_request"] = request.req
         item["edit_uid"] = 0
         item["status"] = request.getStatus()
         item["type"] = "static"

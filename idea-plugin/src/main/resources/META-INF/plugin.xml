@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.itangcent.idea.plugin.easy-yapi</id>
-    <name>EasyYapi</name>
+    <name>Raycloud-EasyYapi</name>
     <version>2.0.6.183.0</version>
     <vendor email="pentatangcent@gmail.com" url="https://github.com/tangcent">Tangcent</vendor>
 

@@ -72,8 +72,10 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
     }
 
     override fun saveApiInfo(apiInfo: HashMap<String, Any?>): Boolean {
-
+//        val run = RuntimeException("11")
+        logger!!.info("======")
         try {
+            logger.info("api info:${GsonUtils.toJson(apiInfo)}")
             val returnValue = httpClientProvide!!.getHttpClient()
                     .post(server + SAVE_API)
                     .contentType(ContentType.APPLICATION_JSON)
@@ -82,13 +84,13 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
                     .string()
             val errMsg = findErrorMsg(returnValue)
             if (StringUtils.isNotBlank(errMsg)) {
-                logger!!.info("Post failed:$errMsg")
+                logger.info("Post failed:$errMsg")
                 logger.info("api info:${GsonUtils.toJson(apiInfo)}")
                 return false
             }
             return true
         } catch (e: Throwable) {
-            logger!!.error("Post failed:" + ExceptionUtils.getStackTrace(e))
+            logger.error("Post failed:" + ExceptionUtils.getStackTrace(e))
             return false
         }
     }

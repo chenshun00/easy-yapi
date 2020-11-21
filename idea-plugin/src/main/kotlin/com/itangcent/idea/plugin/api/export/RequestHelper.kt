@@ -12,6 +12,8 @@ interface RequestHelper {
 
     fun setPath(request: Request, path: URL)
 
+    fun setReq(request: Request, req: String)
+
     /**
      * addAsJsonBody if content-type is json
      * otherwise addAsForm

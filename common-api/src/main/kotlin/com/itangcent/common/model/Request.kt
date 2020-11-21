@@ -26,6 +26,8 @@ open class Request : Doc() {
 
     var querys: MutableList<Param>? = null
 
+    var req: String? = null
+
     var formParams: MutableList<FormParam>? = null
 
     /**
