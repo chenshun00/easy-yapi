@@ -449,8 +449,10 @@ private class SimpleObjectFormatter(handle: (String) -> Unit) : AbstractObjectFo
         when (obj) {
             null -> type = "object"
             is String -> type = "string"
-            is Number -> type = if (obj is Int || obj is Long) {
+            is Number -> type = if (obj is Int) {
                 "integer"
+            } else if (obj is Long) {
+                "long"
             } else {
                 "number"
             }
