@@ -453,6 +453,10 @@ private class SimpleObjectFormatter(handle: (String) -> Unit) : AbstractObjectFo
                 "integer"
             } else if (obj is Long) {
                 "long"
+            } else if (obj is Double) {
+                "double"
+            } else if (obj is Float) {
+                "float"
             } else {
                 "number"
             }

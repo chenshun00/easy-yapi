@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.itangcent.idea.plugin.easy-yapi</id>
     <name>Raycloud-EasyYapi</name>
-    <version>2.0.6.183.0</version>
+    <version>2.11.6.183.0</version>
     <vendor email="pentatangcent@gmail.com" url="https://github.com/tangcent">Tangcent</vendor>
 
     <description><![CDATA[ Description will be added by gradle build]]></description>
@@ -16,7 +16,6 @@
 
     <!--for dev-->
     <!--<idea-version since-build="173.0"/>-->
-
 
     <change-notes><![CDATA[	Change notes will be filled by gradle build ]]>
     </change-notes>

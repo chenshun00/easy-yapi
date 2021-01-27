@@ -25,6 +25,7 @@ import com.itangcent.intellij.jvm.*
 import com.itangcent.intellij.jvm.duck.DuckType
 import com.itangcent.intellij.jvm.element.ExplicitElement
 import com.itangcent.intellij.jvm.element.ExplicitMethod
+import com.itangcent.intellij.jvm.element.ExplicitMethodWithOutGenericInfo
 import com.itangcent.intellij.jvm.element.ExplicitParameter
 import com.itangcent.intellij.logger.Logger
 import com.itangcent.intellij.psi.ContextSwitchListener
@@ -39,6 +40,9 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
 
     @Inject
     protected val cacheAble: CacheAble? = null
+
+    @Inject
+    private val annotationHelper: AnnotationHelper? = null
 
     override fun support(docType: KClass<*>): Boolean {
         return docType == Request::class
@@ -459,12 +463,23 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                 .forEach(handle)
     }
 
+    @Throws(RuntimeException::class)
     private fun processMethodParameters(method: ExplicitMethod, request: Request) {
 
         val params = method.getParameters()
-        if (params.size != 1) {
-            logger!!.error("仅支持一个参数...作为HttpRequest,API元数据文档 https://www.yuque.com/chenshun00/sbny2o/rxutbo");
-            throw RuntimeException("仅支持一个参数...作为HttpRequest,API元数据文档 https://www.yuque.com/chenshun00/sbny2o/rxutbo")
+        val findAttr = annotationHelper!!.findAttrAsString(method.psi(), "com.raycloud.yapi.api.ApiRequest")
+        if (findAttr == null) {
+            if (method is ExplicitMethodWithOutGenericInfo) {
+                var name = method.name()
+                if (!name.endsWith("Request")) {
+                    name = "${name}Request";
+                }
+                requestHelper!!.setReq(request, name);
+            } else {
+                throw RuntimeException("method不是ExplicitMethodWithOutGenericInfo类型,当初测试未发现:${method.javaClass.simpleName}")
+            }
+        } else {
+            requestHelper!!.setReq(request, findAttr);
         }
         if (params.isNotEmpty()) {
 
@@ -475,8 +490,6 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                 if (ruleComputer!!.computer(ClassExportRuleKeys.PARAM_IGNORE, param) == true) {
                     continue
                 }
-                val requestName = param.getType()!!.name()
-                requestHelper!!.setReq(request, requestName)
                 ruleComputer.computer(ClassExportRuleKeys.PARAM_BEFORE, param)
 
                 try {
