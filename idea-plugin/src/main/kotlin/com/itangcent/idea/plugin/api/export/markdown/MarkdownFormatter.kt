@@ -519,8 +519,14 @@ private class UltimateObjectFormatter(handle: (String) -> Unit) : AbstractObject
         when (obj) {
             null -> type = "object"
             is String -> type = "string"
-            is Number -> type = if (obj is Int || obj is Long) {
+            is Number -> type = if (obj is Int) {
                 "integer"
+            } else if (obj is Long) {
+                "long"
+            } else if (obj is Double) {
+                "double"
+            } else if (obj is Float) {
+                "float"
             } else {
                 "number"
             }

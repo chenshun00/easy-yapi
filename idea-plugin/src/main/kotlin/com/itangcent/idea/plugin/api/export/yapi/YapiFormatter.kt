@@ -381,8 +381,14 @@ open class YapiFormatter {
         if (typedObject is String) {
             item["type"] = "string"
         } else if (typedObject is Number) {
-            if (typedObject is Int || typedObject is Long) {
+            if (typedObject is Int) {
                 item["type"] = "integer"
+            } else if (typedObject is Long) {
+                item["type"] = "long"
+            } else if (typedObject is Double) {
+                item["type"] = "double"
+            } else if (typedObject is Float) {
+                item["type"] = "float"
             } else {
                 item["type"] = "number"
             }
