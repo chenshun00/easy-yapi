@@ -294,19 +294,20 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                             ).setDemo(demo?.getAs(filedName))
                         } else {
                             val get = typeObject[filedName]
-                            requestHelper!!.addParamAndType(request, filedName,
+                            requestHelper!!.addParamAndTypeAndSubType(request, filedName,
                                     null,
                                     required?.getAs(filedName)
                                             ?: false, KVUtils.getUltimateComment(comment, filedName),
-                                    yapiFormatter!!.getTypeOfInput(get)).setDemo(demo?.getAs(filedName))
+                                    yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
+                            ).setDemo(demo?.getAs(filedName))
                         }
                     }
                 }
             } else {
-                return requestHelper!!.addParamAndType(
+                return requestHelper!!.addParamAndTypeAndSubType(
                         request, parameter.name(), tinyQueryParam(typeObject?.toString()),
                         parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
-                        ?: false, paramDesc, yapiFormatter!!.getTypeOfInput(typeObject)
+                        ?: false, paramDesc, yapiFormatter!!.getTypeOfInput(typeObject), yapiFormatter.getSubTypeOfType(typeObject)
                 )
             }
         } catch (e: Exception) {

@@ -83,6 +83,22 @@ open class YapiFormatter {
         return type
     }
 
+    fun getSubTypeOfType(typedObject: Any?): String {
+        if (typedObject is Array<*>) {
+            if (typedObject.size > 0) {
+                val any = typedObject[0]
+                return getTypeOfInput(any);
+            }
+        }
+        if (typedObject is List<*>) {
+            if (typedObject.size > 0) {
+                val any = typedObject[0]
+                return getTypeOfInput(any);
+            }
+        }
+        return "null";
+    }
+
     //region methodDoc----------------------------------------------------------
 
     fun methodDoc2Item(methodDoc: MethodDoc): HashMap<String, Any?> {
@@ -316,6 +332,7 @@ open class YapiFormatter {
                     .set("example", it.getDemo() ?: it.value)
                     .set("desc", it.desc)
                     .set("type", it.type)
+                    .set("subType", it.subType)
                     .set("required", it.required.asInt())
             )
         }

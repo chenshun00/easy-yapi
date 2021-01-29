@@ -18,8 +18,5 @@ class Param : SimpleExtensible(), Serializable {
      */
     var type: String? = null
 
-    /**
-     * 子类型
-     */
     var subType: String? = null
 }

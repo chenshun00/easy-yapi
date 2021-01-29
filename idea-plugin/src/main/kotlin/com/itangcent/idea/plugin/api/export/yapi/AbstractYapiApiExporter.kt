@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import com.intellij.openapi.project.Project
 import com.itangcent.common.logger.traceError
 import com.itangcent.common.model.Doc
+import com.itangcent.common.utils.KV
 import com.itangcent.idea.plugin.api.export.ClassExporter
 import com.itangcent.idea.plugin.api.export.Folder
 import com.itangcent.idea.plugin.api.export.FormatFolderHelper
@@ -11,6 +12,7 @@ import com.itangcent.idea.plugin.settings.SettingBinder
 import com.itangcent.idea.utils.ModuleHelper
 import com.itangcent.intellij.context.ActionContext
 import com.itangcent.intellij.logger.Logger
+import java.util.*
 
 
 open class AbstractYapiApiExporter {
@@ -107,6 +109,7 @@ open class AbstractYapiApiExporter {
 
     open fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
         val apiInfos = yapiFormatter!!.doc2Item(doc)
+        check(apiInfos)
         var ret = false
         apiInfos.forEach { apiInfo ->
             apiInfo["token"] = privateToken
@@ -115,6 +118,20 @@ open class AbstractYapiApiExporter {
             ret = ret or yapiApiHelper!!.saveApiInfo(apiInfo)
         }
         return ret
+    }
+
+    private fun check(apiInfos: List<HashMap<String, Any?>>) {
+        val hashMap = apiInfos[0]
+        val query = hashMap["req_query"]
+        if (query is LinkedList<*>) {
+            val or = query.stream()
+                    .filter { (it as KV<String, *>).getAs<String>("type") == "array" }
+                    .anyMatch { (it as KV<String, *>).getAs<String>("subType") == "map" }.or(false)
+            if (or) {
+                throw RuntimeException("GET请求不支持传递List<Object>的形式，仅支持,List<基本包装类型>,如果需要是使用，请修改为 @RequestBody的场景进行使用. 如果不明白,请仔细阅读.")
+            }
+        }
+
     }
 
 
@@ -127,3 +144,7 @@ open class AbstractYapiApiExporter {
     }
 
 }
+
+//private operator fun Any?.get(s: String): Any {
+//    TODO("Not yet implemented")
+//}
