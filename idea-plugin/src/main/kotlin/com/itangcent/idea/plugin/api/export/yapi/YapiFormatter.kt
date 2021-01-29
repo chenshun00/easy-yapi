@@ -56,6 +56,33 @@ open class YapiFormatter {
         throw IllegalArgumentException("unknown doc")
     }
 
+    /**
+     * 根据输入获取对象类型
+     */
+    fun getTypeOfInput(obj: Any?): String {
+        var type = "object"
+        when (obj) {
+            null -> type = "object"
+            is String -> return "string"
+            is Number -> if (obj is Int) {
+                return "integer"
+            } else if (obj is Long) {
+                return "long"
+            } else if (obj is Double) {
+                return "double"
+            } else if (obj is Float) {
+                return "float"
+            } else {
+                return "number"
+            }
+            is Boolean -> return "boolean"
+            is Array<*> -> return "array"
+            is List<*> -> return "array"
+            is Map<*, *> -> return "map"
+        }
+        return type
+    }
+
     //region methodDoc----------------------------------------------------------
 
     fun methodDoc2Item(methodDoc: MethodDoc): HashMap<String, Any?> {
@@ -288,6 +315,7 @@ open class YapiFormatter {
                     .set("value", it.value)
                     .set("example", it.getDemo() ?: it.value)
                     .set("desc", it.desc)
+                    .set("type", it.type)
                     .set("required", it.required.asInt())
             )
         }

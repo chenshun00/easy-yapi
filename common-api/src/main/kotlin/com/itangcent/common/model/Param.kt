@@ -11,4 +11,15 @@ class Param : SimpleExtensible(), Serializable {
     var desc: String? = null
 
     var required: Boolean? = null
+
+
+    /**
+     * text/file
+     */
+    var type: String? = null
+
+    /**
+     * 子类型
+     */
+    var subType: String? = null
 }

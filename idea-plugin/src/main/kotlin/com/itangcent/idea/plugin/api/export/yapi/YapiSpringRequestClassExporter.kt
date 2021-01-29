@@ -4,9 +4,6 @@ import com.google.inject.Inject
 import com.itangcent.common.constant.Attrs
 import com.itangcent.common.constant.HttpMethod
 import com.itangcent.common.kit.KVUtils
-import com.itangcent.common.utils.asKV
-import com.itangcent.common.utils.getAs
-import com.itangcent.common.utils.getAsKv
 import com.itangcent.common.logger.traceError
 import com.itangcent.common.model.*
 import com.itangcent.common.utils.*
@@ -21,6 +18,9 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
 
     @Inject
     private val configReader: ConfigReader? = null
+
+    @Inject
+    private val yapiFormatter: YapiFormatter? = null
 
     override fun processCompleted(method: ExplicitMethod, kv: KV<String, Any?>, request: Request) {
         super.processCompleted(method, kv, request)
@@ -293,19 +293,20 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                                     KVUtils.getUltimateComment(comment, filedName)
                             ).setDemo(demo?.getAs(filedName))
                         } else {
-                            requestHelper!!.addParam(
-                                    request, filedName, null,
-                                    required?.getAs(filedName) ?: false,
-                                    KVUtils.getUltimateComment(comment, filedName)
-                            ).setDemo(demo?.getAs(filedName))
+                            val get = typeObject[filedName]
+                            requestHelper!!.addParamAndType(request, filedName,
+                                    null,
+                                    required?.getAs(filedName)
+                                            ?: false, KVUtils.getUltimateComment(comment, filedName),
+                                    yapiFormatter!!.getTypeOfInput(get)).setDemo(demo?.getAs(filedName))
                         }
                     }
                 }
             } else {
-                return requestHelper!!.addParam(
+                return requestHelper!!.addParamAndType(
                         request, parameter.name(), tinyQueryParam(typeObject?.toString()),
                         parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
-                        ?: false, paramDesc
+                        ?: false, paramDesc, yapiFormatter!!.getTypeOfInput(typeObject)
                 )
             }
         } catch (e: Exception) {

@@ -65,6 +65,17 @@ fun RequestHelper.addParam(request: Request, paramName: String, defaultVal: Stri
     return param
 }
 
+fun RequestHelper.addParamAndType(request: Request, paramName: String, defaultVal: String?, required: Boolean, desc: String?, type: String): Param {
+    val param = Param()
+    param.name = paramName
+    param.value = defaultVal
+    param.required = required
+    param.desc = desc
+    param.type = type
+    this.addParam(request, param)
+    return param
+}
+
 fun RequestHelper.addFormParam(request: Request, paramName: String, defaultVal: String?, desc: String?) {
     addFormParam(request, paramName, defaultVal, false, desc)
 }
