@@ -72,10 +72,8 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
     }
 
     override fun saveApiInfo(apiInfo: HashMap<String, Any?>): Boolean {
-//        val run = RuntimeException("11")
-        logger!!.info("======")
         try {
-            logger.info("api info:${GsonUtils.toJson(apiInfo)}")
+            logger!!.info("api info:${GsonUtils.toJson(apiInfo)}")
             val returnValue = httpClientProvide!!.getHttpClient()
                     .post(server + SAVE_API)
                     .contentType(ContentType.APPLICATION_JSON)
@@ -90,7 +88,29 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
             }
             return true
         } catch (e: Throwable) {
-            logger.error("Post failed:" + ExceptionUtils.getStackTrace(e))
+            logger!!.error("Post failed:" + ExceptionUtils.getStackTrace(e))
+            return false
+        }
+    }
+
+    override fun saveApiInfoToApiDocPlatform(apiInfo: HashMap<String, Any?>): Boolean {
+        try {
+            logger!!.info("api info:${GsonUtils.toJson(apiInfo)}")
+            val returnValue = httpClientProvide!!.getHttpClient()
+                    .post("http://api.raycloud.com/api/interface/save")
+                    .contentType(ContentType.APPLICATION_JSON)
+                    .body(apiInfo)
+                    .call()
+                    .string()
+            val errMsg = findErrorMsg(returnValue)
+            if (StringUtils.isNotBlank(errMsg)) {
+                logger.info("Post failed:$errMsg")
+                logger.info("api info:${GsonUtils.toJson(apiInfo)}")
+                return false
+            }
+            return true
+        } catch (e: Throwable) {
+            logger!!.error("Post failed:" + ExceptionUtils.getStackTrace(e))
             return false
         }
     }

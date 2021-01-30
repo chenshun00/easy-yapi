@@ -4,7 +4,6 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.inject.ImplementedBy
 import java.util.*
-import kotlin.collections.HashMap
 
 
 @ImplementedBy(DefaultYapiApiHelper::class)
@@ -19,6 +18,8 @@ interface YapiApiHelper {
     fun findCat(token: String, name: String): String?
 
     fun saveApiInfo(apiInfo: HashMap<String, Any?>): Boolean
+
+    fun saveApiInfoToApiDocPlatform(apiInfo: HashMap<String, Any?>): Boolean
 
     fun addCart(privateToken: String, name: String, desc: String): Boolean
 
