@@ -120,6 +120,9 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
         return addCart(projectId, privateToken, name, desc)
     }
 
+    /**
+     * 添加一个类目/具体的yapi内部实现我还不太清楚
+     */
     override fun addCart(projectId: String, token: String, name: String, desc: String): Boolean {
         try {
             val returnValue = httpClientProvide!!.getHttpClient()
