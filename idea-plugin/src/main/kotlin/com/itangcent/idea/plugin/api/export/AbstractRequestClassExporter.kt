@@ -164,6 +164,10 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         return ruleComputer!!.computer(ClassExportRuleKeys.IGNORE, explicitElement) ?: false
     }
 
+    open protected fun shouldIgnoreAnnotation(explicitMethod: ExplicitMethod): Boolean {
+        return annotationHelper!!.findAttrAsString(explicitMethod.psi(), "com.raycloud.yapi.api.Ignore") != null
+    }
+
     private fun exportMethodApi(
             psiClass: PsiClass, method: ExplicitMethod, kv: KV<String, Any?>,
             docHandle: DocHandle
@@ -460,6 +464,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                 .filter { !it.psi().hasModifierProperty("static") }
                 .filter { !it.psi().isConstructor }
                 .filter { !shouldIgnore(it) }
+                .filter { !shouldIgnoreAnnotation(it) }
                 .forEach(handle)
     }
 
