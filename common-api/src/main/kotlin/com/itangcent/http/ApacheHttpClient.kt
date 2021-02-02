@@ -41,12 +41,12 @@ open class ApacheHttpClient : HttpClient {
         httpClientContext!!.cookieStore = basicCookieStore
         httpClient = HttpClients.custom()
                 .setDefaultSocketConfig(SocketConfig.custom()
-                        .setSoTimeout(30 * 1000)
+                        .setSoTimeout(60 * 1000)
                         .build())
                 .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectTimeout(30 * 1000)
-                        .setConnectionRequestTimeout(30 * 1000)
-                        .setSocketTimeout(30 * 1000)
+                        .setConnectTimeout(60 * 1000)
+                        .setConnectionRequestTimeout(60 * 1000)
+                        .setSocketTimeout(60 * 1000)
                         .build()).build()
     }
 

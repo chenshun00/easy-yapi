@@ -93,9 +93,8 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
         }
     }
 
-    override fun saveApiInfoToApiDocPlatform(apiInfo: HashMap<String, Any?>): Boolean {
+    override fun saveApiInfoToApiDocPlatform(apiInfo: List<HashMap<String, Any?>>): Boolean {
         try {
-            logger!!.info("api info:${GsonUtils.toJson(apiInfo)}")
             val returnValue = httpClientProvide!!.getHttpClient()
                     .post("http://api.raycloud.com/api/interface/save")
                     .contentType(ContentType.APPLICATION_JSON)
@@ -104,7 +103,7 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
                     .string()
             val errMsg = findErrorMsg(returnValue)
             if (StringUtils.isNotBlank(errMsg)) {
-                logger.info("Post failed:$errMsg")
+                logger!!.info("Post failed:$errMsg")
                 logger.info("api info:${GsonUtils.toJson(apiInfo)}")
                 return false
             }

@@ -115,7 +115,10 @@ open class AbstractYapiApiExporter {
             apiInfo["token"] = privateToken
             apiInfo["catid"] = cartId
             apiInfo["switch_notice"] = switchNotice()
-            ret = ret or yapiApiHelper!!.saveApiInfoToApiDocPlatform(apiInfo)
+            ret = ret or yapiApiHelper!!.saveApiInfo(apiInfo)
+        }
+        if (ret) {
+            yapiApiHelper!!.saveApiInfoToApiDocPlatform(apiInfos);
         }
         return ret
     }

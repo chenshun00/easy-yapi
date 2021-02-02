@@ -19,7 +19,7 @@ interface YapiApiHelper {
 
     fun saveApiInfo(apiInfo: HashMap<String, Any?>): Boolean
 
-    fun saveApiInfoToApiDocPlatform(apiInfo: HashMap<String, Any?>): Boolean
+    fun saveApiInfoToApiDocPlatform(apiInfo: List<HashMap<String, Any?>>): Boolean
 
     fun addCart(privateToken: String, name: String, desc: String): Boolean
 
