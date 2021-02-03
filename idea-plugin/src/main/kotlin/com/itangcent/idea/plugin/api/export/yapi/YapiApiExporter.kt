@@ -9,7 +9,7 @@ import com.itangcent.idea.plugin.api.export.Folder
 import com.itangcent.intellij.psi.SelectedHelper
 import com.itangcent.intellij.util.ActionUtils
 import com.itangcent.intellij.util.FileType
-import java.util.HashMap
+import java.util.*
 import kotlin.collections.HashSet
 import kotlin.collections.set
 
@@ -42,9 +42,12 @@ class YapiApiExporter : AbstractYapiApiExporter() {
     private fun doExport() {
 
         logger!!.info("Start find apis...")
-
+        //本质上还是一个foreach的遍历过程，区别在于它是面向过程的还是函数式的.
+        //面向过程 foreach(it : Collection){handle(it)}
+        //函数式: foreach(x,()->{handle(x)})
         SelectedHelper.Builder()
                 .dirFilter { dir, callBack ->
+                    //UI处理
                     actionContext!!.runInSwingUI {
                         try {
                             val project = actionContext.instance(Project::class)
@@ -63,6 +66,7 @@ class YapiApiExporter : AbstractYapiApiExporter() {
                         }
                     }
                 }
+                //过滤文件,仅处理.java/.kt后缀的文件
                 .fileFilter { file -> FileType.acceptable(file.name) }
                 .classHandle {
                     classExporter!!.export(it) { doc -> exportDoc(doc) }
@@ -122,7 +126,7 @@ class YapiApiExporter : AbstractYapiApiExporter() {
     override fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
         if (super.exportDoc(doc, privateToken, cartId)) {
             if (successExportedCarts.add(cartId)) {
-                logger!!.info("Export to ${yapiApiHelper!!.getCartWeb(yapiApiHelper.getProjectIdByToken(privateToken)!!, cartId)} success")
+                logger!!.info("${this.javaClass.simpleName}:Export to ${yapiApiHelper!!.getCartWeb(yapiApiHelper.getProjectIdByToken(privateToken)!!, cartId)} success")
             }
             return true
         }
