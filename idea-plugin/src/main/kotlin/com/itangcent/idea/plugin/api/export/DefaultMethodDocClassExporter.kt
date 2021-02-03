@@ -102,11 +102,11 @@ open class DefaultMethodDocClassExporter : ClassExporter, Worker {
             when {
                 !hasApi(cls) -> return false
                 shouldIgnore(cls) -> {
-                    logger!!.info("ignore class:" + cls.qualifiedName)
+                    logger!!.info("${this.javaClass.simpleName}:ignore class:" + cls.qualifiedName)
                     return true
                 }
                 else -> {
-                    logger!!.info("search api from:${cls.qualifiedName}")
+                    logger!!.info("${this.javaClass.simpleName}:search api from:${cls.qualifiedName}")
 
                     val kv = KV.create<String, Any?>()
 

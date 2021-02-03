@@ -567,7 +567,7 @@ class SuvApiExporter {
                 if (super.exportDoc(doc, privateToken, cartId)) {
                     synchronized(successExportedCarts) {
                         if (successExportedCarts.add(cartId)) {
-                            logger!!.info("Export to ${yapiApiHelper!!.getCartWeb(yapiApiHelper.getProjectIdByToken(privateToken)!!, cartId)} success")
+                            logger!!.info("${this.javaClass.simpleName}:Export to ${yapiApiHelper!!.getCartWeb(yapiApiHelper.getProjectIdByToken(privateToken)!!, cartId)} success")
                         }
                     }
                     return true
