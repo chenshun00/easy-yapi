@@ -16,6 +16,9 @@ import kotlin.collections.set
 
 class YapiApiExporter : AbstractYapiApiExporter() {
 
+    /***
+     * 找到服务器地址，开始导出
+     */
     fun export() {
         val serverFound = !yapiApiHelper!!.findServer().isNullOrBlank()
         if (serverFound) {
@@ -24,8 +27,10 @@ class YapiApiExporter : AbstractYapiApiExporter() {
             actionContext!!.runAsync {
                 Thread.sleep(200)
                 actionContext.runInSwingUI {
-                    val yapiServer = Messages.showInputDialog(project, "Input server of yapi",
-                            "server of yapi", Messages.getInformationIcon())
+                    val yapiServer = Messages.showInputDialog(
+                        project, "Input server of yapi",
+                        "server of yapi", Messages.getInformationIcon()
+                    )
                     if (yapiServer.isNullOrBlank()) {
                         logger!!.info("No yapi server")
                         return@runInSwingUI
@@ -46,38 +51,49 @@ class YapiApiExporter : AbstractYapiApiExporter() {
         //面向过程 foreach(it : Collection){handle(it)}
         //函数式: foreach(x,()->{handle(x)})
         SelectedHelper.Builder()
-                .dirFilter { dir, callBack ->
-                    //UI处理
-                    actionContext!!.runInSwingUI {
-                        try {
-                            val project = actionContext.instance(Project::class)
-                            val yes = Messages.showYesNoDialog(project,
-                                    "Export the model in directory [${ActionUtils.findCurrentPath(dir)}]?",
-                                    "Are you sure",
-                                    Messages.getQuestionIcon())
-                            if (yes == Messages.YES) {
-                                callBack(true)
-                            } else {
-                                logger.info("Cancel the operation export api from [${ActionUtils.findCurrentPath(dir)}]!")
-                                callBack(false)
-                            }
-                        } catch (e: Exception) {
+            //目录过滤
+            //一定要明白这里的lambda表达式，不能陷入debug的汪洋大海
+            //这里只是定义了lambda表达式，实际的调用过程中，callback是由外边传递进来的
+            //它的格式是 (Boolean) -> Unit
+            .dirFilter { dir, callBack ->
+                //UI处理
+                actionContext!!.runInSwingUI {
+                    try {
+                        val project = actionContext.instance(Project::class)
+                        val yes = Messages.showYesNoDialog(
+                            project,
+                            "Export the model in directory [${ActionUtils.findCurrentPath(dir)}]?",
+                            "Are you sure",
+                            Messages.getQuestionIcon()
+                        )
+                        if (yes == Messages.YES) {
+                            callBack(true)
+                        } else {
+                            logger.info("Cancel the operation export api from [${ActionUtils.findCurrentPath(dir)}]!")
                             callBack(false)
                         }
+                    } catch (e: Exception) {
+                        callBack(false)
                     }
                 }
-                //过滤文件,仅处理.java/.kt后缀的文件
-                .fileFilter { file -> FileType.acceptable(file.name) }
-                .classHandle {
-                    classExporter!!.export(it) { doc -> exportDoc(doc) }
+            }
+            //过滤文件,仅处理.java/.kt后缀的文件
+            .fileFilter { file -> FileType.acceptable(file.name) }
+            //
+            .classHandle {
+                //真实的文档导出操作
+                classExporter!!.export(it) { doc -> exportDoc(doc) }
+            }
+            .onCompleted {
+                //触发完成✅操作
+                if (classExporter is Worker) {
+                    classExporter.waitCompleted()
                 }
-                .onCompleted {
-                    if (classExporter is Worker) {
-                        classExporter.waitCompleted()
-                    }
-                    logger.info("Apis exported completed")
-                }
-                .traversal()
+                logger.info("Apis exported completed")
+            }
+            //⚠️ 到这里为止都是定义了一些lambda表达式的使用，但是真实的调用尚未发起
+            //而这里就是真实调用的发起点
+            .traversal()
     }
 
     //privateToken+folderName -> CartInfo
@@ -109,8 +125,10 @@ class YapiApiExporter : AbstractYapiApiExporter() {
         } else {
             tryInputTokenOfModule.add(module)
             val modulePrivateToken = actionContext!!.callInSwingUI {
-                return@callInSwingUI Messages.showInputDialog(project, "Input Private Token Of Module:$module",
-                        "Yapi Private Token", Messages.getInformationIcon())
+                return@callInSwingUI Messages.showInputDialog(
+                    project, "Input Private Token Of Module:$module",
+                    "Yapi Private Token", Messages.getInformationIcon()
+                )
             }
             return if (modulePrivateToken.isNullOrBlank()) {
                 null
@@ -126,7 +144,14 @@ class YapiApiExporter : AbstractYapiApiExporter() {
     override fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
         if (super.exportDoc(doc, privateToken, cartId)) {
             if (successExportedCarts.add(cartId)) {
-                logger!!.info("${this.javaClass.simpleName}:Export to ${yapiApiHelper!!.getCartWeb(yapiApiHelper.getProjectIdByToken(privateToken)!!, cartId)} success")
+                logger!!.info(
+                    "${this.javaClass.simpleName}:Export to ${
+                        yapiApiHelper!!.getCartWeb(
+                            yapiApiHelper.getProjectIdByToken(privateToken)!!,
+                            cartId
+                        )
+                    } success"
+                )
             }
             return true
         }

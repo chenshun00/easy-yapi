@@ -42,6 +42,9 @@ class YapiExportAction : ApiExportAction("Export Yapi") {
 
     override fun actionPerformed(actionContext: ActionContext, project: Project?, anActionEvent: AnActionEvent) {
         super.actionPerformed(actionContext, project, anActionEvent)
+        //到这一步为主,都是属于准备数据阶段===> 这步需要整理的东西就比较多了. 不过核心还是Juice的注入
+
+        //现在这一步就开始准备导出数据了,直接debug就行
         actionContext.instance(YapiApiExporter::class).export()
     }
 
