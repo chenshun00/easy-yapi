@@ -20,7 +20,6 @@ import com.itangcent.intellij.jvm.PsiClassHelper
 abstract class ApiExportAction(text: String) : BasicAnAction(text) {
 
     override fun afterBuildActionContext(event: AnActionEvent, builder: ActionContext.ActionContextBuilder) {
-        super.afterBuildActionContext(event, builder)
 
         builder.bind(RuleParser::class) { it.with(SuvRuleParser::class).singleton() }
         builder.bind(RuleComputeListener::class) { it.with(RuleComputeListenerRegistry::class).singleton() }

@@ -50,13 +50,13 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
         try {
             projectInfo = getProjectInfo(token, projectId)
             val cats = projectInfo
-                    ?.sub("data")
-                    ?.sub("cat")
-                    ?.asJsonArray
+                ?.sub("data")
+                ?.sub("cat")
+                ?.asJsonArray
             cats?.forEach { cat ->
                 if (cat.sub("name")?.asString == name) {
                     cachedCartId = cat.sub("_id")!!
-                            .asString
+                        .asString
                     if (cachedCartId != null) {
                         cacheLock.writeLock().withLock {
                             cartIdCache[key] = cachedCartId!!
@@ -75,11 +75,11 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
         try {
             logger!!.info("api info:${GsonUtils.toJson(apiInfo)}")
             val returnValue = httpClientProvide!!.getHttpClient()
-                    .post(server + SAVE_API)
-                    .contentType(ContentType.APPLICATION_JSON)
-                    .body(apiInfo)
-                    .call()
-                    .string()
+                .post(server + SAVE_API)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(apiInfo)
+                .call()
+                .string()
             val errMsg = findErrorMsg(returnValue)
             if (StringUtils.isNotBlank(errMsg)) {
                 logger.info("Post failed:$errMsg")
@@ -96,11 +96,11 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
     override fun saveApiInfoToApiDocPlatform(apiInfo: HashMap<String, Any?>): Boolean {
         try {
             val returnValue = httpClientProvide!!.getHttpClient()
-                    .post("http://api.raycloud.com/api/interface/save")
-                    .contentType(ContentType.APPLICATION_JSON)
-                    .body(apiInfo)
-                    .call()
-                    .string()
+                .post("http://api.raycloud.com/api/interface/save")
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(apiInfo)
+                .call()
+                .string()
             val errMsg = findErrorMsg(returnValue)
             if (StringUtils.isNotBlank(errMsg)) {
                 logger!!.info("Post failed:$errMsg")
@@ -114,26 +114,32 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
         }
     }
 
-    override fun addCart(privateToken: String, name: String, desc: String): Boolean {
-        val projectId = getProjectIdByToken(privateToken) ?: return false
-        return addCart(projectId, privateToken, name, desc)
+    override fun addCart(token: String, name: String, desc: String): Boolean {
+        val projectId = getProjectIdByToken(token) ?: return false
+        return addCart(projectId, token, name, desc)
     }
 
     /**
      * 添加一个类目/具体的yapi内部实现我还不太清楚
+     * @param projectId 项目ID
+     * @param token 项目token
+     * @param name 类目名字
+     * @param desc 类目描述
      */
     override fun addCart(projectId: String, token: String, name: String, desc: String): Boolean {
         try {
             val returnValue = httpClientProvide!!.getHttpClient()
-                    .post(server + ADD_CART)
-                    .contentType(ContentType.APPLICATION_JSON)
-                    .body(KV.create<Any?, Any?>()
-                            .set("desc", desc)
-                            .set("project_id", projectId)
-                            .set("name", name)
-                            .set("token", token))
-                    .call()
-                    .string()
+                .post(server + ADD_CART)
+                .contentType(ContentType.APPLICATION_JSON)
+                .body(
+                    KV.create<Any?, Any?>()
+                        .set("desc", desc)
+                        .set("project_id", projectId)
+                        .set("name", name)
+                        .set("token", token)
+                )
+                .call()
+                .string()
 
             val errMsg = findErrorMsg(returnValue)
             if (StringUtils.isNotBlank(errMsg)) {
@@ -142,8 +148,8 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
             }
             val resObj = returnValue?.asJsonElement()
             val addCartId: String? = resObj.sub("data")
-                    .sub("_id")
-                    ?.asString
+                .sub("_id")
+                ?.asString
             if (addCartId != null) {
                 cacheLock.writeLock().withLock {
                     cartIdCache["$projectId$name"] = addCartId
@@ -163,27 +169,27 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
     override fun findApi(token: String, catId: String, apiName: String): String? {
         val url = "$server$GET_CAT?token=$token&catid=$catId&limit=1000"
         return GsonUtils.parseToJsonTree(getByApi(url))
-                ?.sub("data")
-                ?.sub("list")
-                ?.asJsonArray?.firstOrNull { api ->
-                    api.sub("title")
-                            ?.asString == apiName
-                }?.sub("_id")?.asString
+            ?.sub("data")
+            ?.sub("list")
+            ?.asJsonArray?.firstOrNull { api ->
+                api.sub("title")
+                    ?.asString == apiName
+            }?.sub("_id")?.asString
     }
 
     override fun findApis(token: String, catId: String): ArrayList<Any?>? {
         val url = "$server$GET_CAT?token=$token&catid=$catId&limit=1000"
         return GsonUtils.parseToJsonTree(getByApi(url))
-                ?.sub("data")
-                ?.sub("list")
-                ?.asList()
+            ?.sub("data")
+            ?.sub("list")
+            ?.asList()
     }
 
     override fun findCarts(project_id: String, token: String): ArrayList<Any?>? {
         val url = "$server$GET_CAT_MENU?project_id=$project_id&token=$token"
         return GsonUtils.parseToJsonTree(getByApi(url))
-                ?.sub("data")
-                ?.asList()
+            ?.sub("data")
+            ?.asList()
     }
 
     companion object {

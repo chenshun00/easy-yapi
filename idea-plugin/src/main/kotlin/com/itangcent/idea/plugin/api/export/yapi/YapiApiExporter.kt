@@ -27,10 +27,7 @@ class YapiApiExporter : AbstractYapiApiExporter() {
             actionContext!!.runAsync {
                 Thread.sleep(200)
                 actionContext.runInSwingUI {
-                    val yapiServer = Messages.showInputDialog(
-                        project, "Input server of yapi",
-                        "server of yapi", Messages.getInformationIcon()
-                    )
+                    val yapiServer = Messages.showInputDialog(project, "I请输入Yapi服务器地址", "Yapi服务器地址", Messages.getInformationIcon())
                     if (yapiServer.isNullOrBlank()) {
                         logger!!.info("No yapi server")
                         return@runInSwingUI
@@ -114,6 +111,9 @@ class YapiApiExporter : AbstractYapiApiExporter() {
 
     private var tryInputTokenOfModule: HashSet<String> = HashSet()
 
+    /**
+     * 获取这个module对应的token
+     */
     override fun getTokenOfModule(module: String): String? {
         val privateToken = super.getTokenOfModule(module)
         if (!privateToken.isNullOrBlank()) {

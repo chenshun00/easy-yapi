@@ -57,7 +57,9 @@ open class AbstractYapiApiExporter {
     protected open fun getCartForDoc(resource: Any): CartInfo? {
 
         //get token
+        //resource 代表了一个module，🐂 🍺
         val module = actionContext!!.callInReadUI { moduleHelper!!.findModule(resource) } ?: return null
+        //
         val privateToken = getTokenOfModule(module)
         if (privateToken == null) {
             logger!!.info("No token be found for $module")
@@ -69,6 +71,9 @@ open class AbstractYapiApiExporter {
         return getCartForDoc(folder, privateToken)
     }
 
+    /**
+     * 从doc中获取类目信息
+     */
     protected open fun getCartForDoc(folder: Folder, privateToken: String): CartInfo? {
 
         val name: String = folder.name ?: "anonymous"
@@ -76,6 +81,7 @@ open class AbstractYapiApiExporter {
         var cartId: String?
 
         //try find existed cart.
+        //根据名字尝试找到已经存在的类目ID
         try {
             cartId = yapiApiHelper!!.findCat(privateToken, name)
         } catch (e: Exception) {
@@ -101,12 +107,19 @@ open class AbstractYapiApiExporter {
         return cartInfo
     }
 
+    /**
+     * 正式导出文档
+     */
     fun exportDoc(doc: Doc): Boolean {
         if (doc.resource == null) return false
+        //获取类目信息
         val cartInfo = getCartForDoc(doc.resource!!) ?: return false
         return exportDoc(doc, cartInfo.privateToken!!, cartInfo.cartId!!)
     }
 
+    /**
+     * 获取Java文件中全部的API信息,然后遍历这个数据导出
+     */
     open fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
         val apiInfos = yapiFormatter!!.doc2Item(doc)
         check(apiInfos)
@@ -126,8 +139,8 @@ open class AbstractYapiApiExporter {
         val query = hashMap["req_query"]
         if (query is LinkedList<*>) {
             val or = query.stream()
-                    .filter { (it as KV<String, *>).getAs<String>("type") == "array" }
-                    .anyMatch { (it as KV<String, *>).getAs<String>("subType") == "map" }.or(false)
+                .filter { (it as KV<String, *>).getAs<String>("type") == "array" }
+                .anyMatch { (it as KV<String, *>).getAs<String>("subType") == "map" }.or(false)
             if (or) {
                 throw RuntimeException("GET请求不支持传递List<Object>的形式，仅支持,List<基本包装类型>,如果需要是使用，请修改为 @RequestBody的场景进行使用. 如果不明白,请仔细阅读.")
             }
