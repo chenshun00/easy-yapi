@@ -21,16 +21,21 @@ class ComboClassExporter : ClassExporter, Worker {
     @Inject
     private var actionContext: ActionContext? = null
 
+    /**
+     * 子类导出
+     * YapiSpringRequestClassExporter.class
+     * YapiMethodDocClassExporter.class
+     */
     private var subClassExporters: Array<ClassExporter>? = null
 
     @PostConstruct
     fun init() {
         subClassExporters = classExporters
-                ?.stream()
-                ?.map { it as KClass<*> }
-                ?.map { actionContext!!.instance(it) }
-                ?.map { it as ClassExporter }
-                ?.toTypedArray()
+            ?.stream()
+            ?.map { it as KClass<*> }
+            ?.map { actionContext!!.instance(it) }
+            ?.map { it as ClassExporter }
+            ?.toTypedArray()
     }
 
     override fun support(docType: KClass<*>): Boolean {
@@ -43,25 +48,25 @@ class ComboClassExporter : ClassExporter, Worker {
 
     override fun status(): WorkerStatus {
         return this.subClassExporters
-                ?.stream()
-                ?.filter { it is Worker }
-                ?.map { it as Worker }
-                ?.map { it.status() }
-                ?.reduceSafely(WorkerStatus::and)
-                ?: WorkerStatus.FREE
+            ?.stream()
+            ?.filter { it is Worker }
+            ?.map { it as Worker }
+            ?.map { it.status() }
+            ?.reduceSafely(WorkerStatus::and)
+            ?: WorkerStatus.FREE
     }
 
     override fun waitCompleted() {
         this.subClassExporters
-                ?.stream()
-                ?.filterAs<Worker>()
-                ?.forEach { it.waitCompleted() }
+            ?.stream()
+            ?.filterAs<Worker>()
+            ?.forEach { it.waitCompleted() }
     }
 
     override fun cancel() {
         this.subClassExporters
-                ?.stream()
-                ?.filterAs<Worker>()
-                ?.forEach { it.cancel() }
+            ?.stream()
+            ?.filterAs<Worker>()
+            ?.forEach { it.cancel() }
     }
 }

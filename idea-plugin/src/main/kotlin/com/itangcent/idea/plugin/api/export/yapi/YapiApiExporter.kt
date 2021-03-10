@@ -79,6 +79,12 @@ class YapiApiExporter : AbstractYapiApiExporter() {
             //
             .classHandle {
                 //真实的文档导出操作
+                //这里不要直接就看exportDoc了，因为在exportDoc之前，还存在一个数据收集的阶段
+                //ComboClassExporter
+                //下边的这个写法等同于==> classExporter!!.export(it,{ doc -> exportDoc(doc) })
+                // 惊不惊喜，意不意外
+                //这里的 { doc -> exportDoc(doc) } 其实就等同于(new DocHandle的接口实现)
+                //kotlin 语法有点飘
                 classExporter!!.export(it) { doc -> exportDoc(doc) }
             }
             .onCompleted {
