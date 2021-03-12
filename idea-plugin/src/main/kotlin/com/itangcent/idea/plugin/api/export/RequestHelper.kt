@@ -14,6 +14,8 @@ interface RequestHelper {
 
     fun setReq(request: Request, req: String)
 
+    fun setOnlineOrNot(request: Request, online: String)
+
     /**
      * addAsJsonBody if content-type is json
      * otherwise addAsForm
@@ -76,8 +78,9 @@ fun RequestHelper.addParamAndType(request: Request, paramName: String, defaultVa
     return param
 }
 
-fun RequestHelper.addParamAndTypeAndSubType(request: Request, paramName: String, defaultVal: String?, required: Boolean, desc: String?, type: String
-                                            , subType: String): Param {
+fun RequestHelper.addParamAndTypeAndSubType(
+    request: Request, paramName: String, defaultVal: String?, required: Boolean, desc: String?, type: String, subType: String
+): Param {
     val param = Param()
     param.name = paramName
     param.value = defaultVal

@@ -17,7 +17,7 @@ interface YapiApiHelper {
 
     fun findCat(token: String, name: String): String?
 
-    fun saveApiInfo(apiInfo: HashMap<String, Any?>): Boolean
+    fun saveApiInfo(apiInfo: HashMap<String, Any?>): Pair<Boolean, String?>
 
     fun saveApiInfoToApiDocPlatform(apiInfo: HashMap<String, Any?>): Boolean
 

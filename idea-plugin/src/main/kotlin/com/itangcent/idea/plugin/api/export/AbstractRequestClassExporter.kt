@@ -185,18 +185,21 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         val request = Request()
 
         request.resource = PsiMethodResource(method.psi(), psiClass)
-
+        //这部分比较简单
         processMethod(method, kv, request)
-
+        //参数部分和响应部分比较复杂
         processMethodParameters(method, request)
-
+        //处理响应
         processResponse(method, request)
-
+        //处理完成?
         processCompleted(method, kv, request)
-
+        //开始暴露
         docHandle(request)
     }
 
+    /**
+     * 处理方法,得先看下这部分完成了什么问题
+     */
     protected open fun processMethod(method: ExplicitMethod, kv: KV<String, Any?>, request: Request) {
         apiHelper!!.nameAndAttrOfApi(method, {
             requestHelper!!.setName(request, it)
@@ -411,6 +414,9 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         return docHelper!!.getAttrOfDocComment(method)
     }
 
+    /**
+     * 获取参数描述
+     */
     private fun extractParamComment(psiMethod: PsiMethod): KV<String, Any>? {
         val subTagMap = docHelper!!.getSubTagMapOfDocComment(psiMethod, "param")
 
@@ -486,6 +492,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
     private fun processMethodParameters(method: ExplicitMethod, request: Request) {
 
         val params = method.getParameters()
+        //处理SDK的形式
         val findAttr = annotationHelper!!.findAttrAsString(method.psi(), "com.raycloud.yapi.api.ApiRequest")
         if (findAttr == null) {
             if (method is ExplicitMethodWithOutGenericInfo) {
@@ -500,6 +507,15 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         } else {
             requestHelper!!.setReq(request, findAttr);
         }
+
+        //处理API是线上还是线下的情况
+        val isOnline = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_ONLINE)
+        var onlineValue = "offline"
+        if (isOnline != null) {
+            onlineValue = "online"
+        }
+
+        //参数不为空
         if (params.isNotEmpty()) {
 
             val paramDocComment = extractParamComment(method.psi())
@@ -542,9 +558,10 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                         method
                     ) ?: HttpMethod.POST
                 }
-                requestHelper!!.addHeader(request, "Content-Type", "multipart/form-data")
+                requestHelper.addHeader(request, "Content-Type", "multipart/form-data")
             }
 
+            //对参数进行遍历
             for ((param, typeObject) in parsedParams) {
                 ruleComputer!!.computer(ClassExportRuleKeys.PARAM_BEFORE, param)
 
@@ -566,11 +583,11 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                 ClassExportRuleKeys.METHOD_DEFAULT_HTTP_METHOD,
                 method
             )
-            requestHelper!!.setMethod(request, defaultHttpMethod ?: HttpMethod.GET)
+            requestHelper.setMethod(request, defaultHttpMethod ?: HttpMethod.GET)
         }
 
         if (request.hasBodyOrForm()) {
-            requestHelper!!.addHeaderIfMissed(request, "Content-Type", "application/x-www-form-urlencoded")
+            requestHelper.addHeaderIfMissed(request, "Content-Type", "application/x-www-form-urlencoded")
         }
 
     }

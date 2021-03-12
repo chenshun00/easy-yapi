@@ -9,20 +9,37 @@ import java.util.*
 
 @Singleton
 open class DefaultRequestHelper : RequestHelper {
+
+    /**
+     * 设置名字
+     */
     override fun setName(request: Request, name: String) {
         request.name = name
     }
 
+    /**
+     * 设置http method
+     */
     override fun setMethod(request: Request, method: String) {
         request.method = method
     }
 
+    /**
+     * 设置http path
+     */
     override fun setPath(request: Request, path: URL) {
         request.path = path
     }
 
+    /**
+     * 设置Request名字(生成SDK用)
+     */
     override fun setReq(request: Request, req: String) {
         request.req = req
+    }
+
+    override fun setOnlineOrNot(request: Request, online: String) {
+        request.online = online
     }
 
     override fun setModelAsBody(request: Request, model: Any) {
@@ -35,8 +52,8 @@ open class DefaultRequestHelper : RequestHelper {
             val default = model[Attrs.DEFAULT_VALUE_ATTR] as Map<*, *>?
             model.forEach { (k, v) ->
                 addFormParam(
-                        request, k.toString(), (default?.get(k) ?: v).toPrettyString(),
-                        KVUtils.getUltimateComment(comment, k)
+                    request, k.toString(), (default?.get(k) ?: v).toPrettyString(),
+                    KVUtils.getUltimateComment(comment, k)
                 )
             }
         }

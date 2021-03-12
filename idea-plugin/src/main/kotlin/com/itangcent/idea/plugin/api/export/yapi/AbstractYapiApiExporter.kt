@@ -72,7 +72,9 @@ open class AbstractYapiApiExporter {
     }
 
     /**
-     * 从doc中获取类目信息
+     * folder代表的就是类目信息
+     * @param folder 类目信息
+     * @param privateToken token信息
      */
     protected open fun getCartForDoc(folder: Folder, privateToken: String): CartInfo? {
 
@@ -128,7 +130,12 @@ open class AbstractYapiApiExporter {
             apiInfo["token"] = privateToken
             apiInfo["catid"] = cartId
             apiInfo["switch_notice"] = switchNotice()
-            ret = ret or yapiApiHelper!!.saveApiInfo(apiInfo)
+            val saveApiInfo = yapiApiHelper!!.saveApiInfo(apiInfo)
+            ret = ret or saveApiInfo.first
+            logger!!.info("[saveInfo:${saveApiInfo.first}\t${saveApiInfo.second}]")
+            if (saveApiInfo.first) {
+                apiInfo["apiId"] = saveApiInfo.second
+            }
             ret = ret or yapiApiHelper.saveApiInfoToApiDocPlatform(apiInfo)
         }
         return ret

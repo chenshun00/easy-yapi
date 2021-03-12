@@ -177,7 +177,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
         }
 
         if (parameter.required == null) {
-            parameter.required = ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
+            parameter.required = ruleComputer.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
         }
 
         if (request.method == HttpMethod.GET) {

@@ -71,9 +71,9 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
         return null
     }
 
-    override fun saveApiInfo(apiInfo: HashMap<String, Any?>): Boolean {
+    override fun saveApiInfo(apiInfo: HashMap<String, Any?>): Pair<Boolean, String?> {
         try {
-            logger!!.info("api info:${GsonUtils.toJson(apiInfo)}")
+//            logger!!.info("api info:${GsonUtils.toJson(apiInfo)}")
             val returnValue = httpClientProvide!!.getHttpClient()
                 .post(server + SAVE_API)
                 .contentType(ContentType.APPLICATION_JSON)
@@ -82,14 +82,16 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
                 .string()
             val errMsg = findErrorMsg(returnValue)
             if (StringUtils.isNotBlank(errMsg)) {
-                logger.info("Post failed:$errMsg")
-                logger.info("api info:${GsonUtils.toJson(apiInfo)}")
-                return false
+                logger!!.info("Post failed:$errMsg\tapi info:${GsonUtils.toJson(apiInfo)}")
+                return Pair(false, "null")
             }
-            return true
+            val resObj = returnValue?.asJsonElement()
+            val asString = resObj.sub("data")?.asJsonArray?.firstOrNull()
+                .sub("_id")?.asString
+            return Pair(true, asString)
         } catch (e: Throwable) {
             logger!!.error("Post failed:" + ExceptionUtils.getStackTrace(e))
-            return false
+            return Pair(false, "null")
         }
     }
 
@@ -147,9 +149,7 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
                 return false
             }
             val resObj = returnValue?.asJsonElement()
-            val addCartId: String? = resObj.sub("data")
-                .sub("_id")
-                ?.asString
+            val addCartId: String? = resObj.sub("data").sub("_id")?.asString
             if (addCartId != null) {
                 cacheLock.writeLock().withLock {
                     cartIdCache["$projectId$name"] = addCartId
