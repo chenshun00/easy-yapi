@@ -16,6 +16,8 @@ interface RequestHelper {
 
     fun setOnlineOrNot(request: Request, online: String)
 
+    fun setSession(request: Request, session: Boolean)
+
     /**
      * addAsJsonBody if content-type is json
      * otherwise addAsForm

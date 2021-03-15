@@ -30,6 +30,8 @@ open class Request : Doc() {
 
     var online: String? = null
 
+    var session: Boolean = false
+
     var formParams: MutableList<FormParam>? = null
 
     /**

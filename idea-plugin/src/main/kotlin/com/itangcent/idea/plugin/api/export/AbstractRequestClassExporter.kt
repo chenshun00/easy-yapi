@@ -514,7 +514,13 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         if (isOnline != null) {
             onlineValue = "online"
         }
-
+        requestHelper.setOnlineOrNot(request, onlineValue);
+        val session = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_SESSION)
+        if (session != null) {
+            requestHelper.setSession(request, true);
+        } else {
+            requestHelper.setSession(request, false);
+        }
         //参数不为空
         if (params.isNotEmpty()) {
 

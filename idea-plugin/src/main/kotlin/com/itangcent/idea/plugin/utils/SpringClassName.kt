@@ -20,6 +20,7 @@ class SpringClassName {
         //custom annotations
         const val API_OFFLINE = "com.raycloud.yapi.api.Offline"
         const val API_ONLINE = "com.raycloud.yapi.api.Online"
+        const val API_SESSION = "com.raycloud.yapi.api.Session"
 
         //annotations
         const val REQUEST_MAPPING_ANNOTATION = "org.springframework.web.bind.annotation.RequestMapping"

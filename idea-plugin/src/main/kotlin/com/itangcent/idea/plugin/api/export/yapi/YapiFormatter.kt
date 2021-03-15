@@ -287,6 +287,7 @@ open class YapiFormatter {
         val item: HashMap<String, Any?> = HashMap()
         item["req_request"] = request.req
         item["req_online"] = request.online
+        item["session"] = request.session
         item["edit_uid"] = 0
         item["status"] = request.getStatus()
         item["type"] = "static"

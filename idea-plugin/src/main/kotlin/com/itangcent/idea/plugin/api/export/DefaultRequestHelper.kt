@@ -42,6 +42,10 @@ open class DefaultRequestHelper : RequestHelper {
         request.online = online
     }
 
+    override fun setSession(request: Request, session: Boolean) {
+        request.session = session
+    }
+
     override fun setModelAsBody(request: Request, model: Any) {
         request.body = model
     }
