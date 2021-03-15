@@ -38,6 +38,7 @@ class SpringClassName {
         const val DELETE_MAPPING = "org.springframework.web.bind.annotation.DeleteMapping"
         const val PATCH_MAPPING = "org.springframework.web.bind.annotation.PatchMapping"
         const val ROUTER_MAPPING = "com.raycloud.yapi.api.Router"
+        const val PATH_MAPPING = "com.raycloud.yapi.api.Path"
 
         val SPRING_REQUEST_MAPPING_ANNOTATIONS: Set<String> = setOf(
             REQUEST_MAPPING_ANNOTATION,
@@ -46,7 +47,8 @@ class SpringClassName {
             PATCH_MAPPING,
             POST_MAPPING,
             PUT_MAPPING,
-            ROUTER_MAPPING
+            ROUTER_MAPPING,
+            PATH_MAPPING
         )
 
         const val REQUEST_HEADER_DEFAULT_NONE = "\n\t\t\n\t\t\n\uE000\uE001\uE002\n\t\t\t\t\n"

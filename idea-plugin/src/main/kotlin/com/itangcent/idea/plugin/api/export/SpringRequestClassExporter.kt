@@ -390,6 +390,9 @@ open class SpringRequestClassExporter : AbstractRequestClassExporter() {
         }
     }
 
+    /**
+     * 解析注解获取method
+     */
     private fun findHttpMethod(requestMappingAnn: Pair<Map<String, Any?>, String>?): String {
         if (requestMappingAnn != null) {
             when {
@@ -399,7 +402,7 @@ open class SpringRequestClassExporter : AbstractRequestClassExporter() {
                         method = method.substringBefore(",")
                     }
                     return when {
-                        method.isNullOrBlank() -> {
+                        method.isBlank() -> {
                             HttpMethod.NO_METHOD
                         }
                         method.startsWith("RequestMethod.") -> {
@@ -407,6 +410,24 @@ open class SpringRequestClassExporter : AbstractRequestClassExporter() {
                         }
                         method.contains("RequestMethod.") -> {
                             method.substringAfterLast("RequestMethod.")
+                        }
+                        else -> method
+                    }
+                }
+                requestMappingAnn.second == SpringClassName.ROUTER_MAPPING -> {
+                    var method = requestMappingAnn.first["method"].tinyString() ?: return HttpMethod.NO_METHOD
+                    if (method.contains(",")) {
+                        method = method.substringBefore(",")
+                    }
+                    return when {
+                        method.isBlank() -> {
+                            HttpMethod.NO_METHOD
+                        }
+                        method.startsWith("RouterMethod.") -> {
+                            method.removePrefix("RouterMethod.")
+                        }
+                        method.contains("RouterMethod.") -> {
+                            method.substringAfterLast("RouterMethod.")
                         }
                         else -> method
                     }
