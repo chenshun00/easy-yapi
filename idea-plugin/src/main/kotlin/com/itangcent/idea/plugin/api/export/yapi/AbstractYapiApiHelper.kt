@@ -51,11 +51,7 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
     }
 
     override fun findServer(): String? {
-        if (!server.isNullOrBlank()) return server
-        server = configReader!!.first("server")?.trim()?.removeSuffix("/")
-        if (!server.isNullOrBlank()) return server
-        server = settingBinder!!.read().yapiServer?.trim()?.removeSuffix("/")
-        return server
+        return "http://yapi.raycloud.com"
     }
 
     override fun setYapiServer(yapiServer: String) {
@@ -77,8 +73,8 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         if (StringUtils.isNotBlank(res) && res.contains("errmsg")) {
             val returnObj = GsonUtils.parseToJsonTree(res)
             val errMsg = returnObj
-                    .sub("errmsg")
-                    ?.asString
+                .sub("errmsg")
+                ?.asString
             if (StringUtils.isNotBlank(errMsg) && !errMsg!!.contains("成功")) {
                 return errMsg
             }
@@ -91,9 +87,9 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         if (projectId != null) return projectId
         try {
             projectId = getProjectInfo(token, null)
-                    ?.sub("data")
-                    ?.sub("_id")
-                    ?.asString
+                ?.sub("data")
+                ?.sub("_id")
+                ?.asString
         } catch (e: IllegalStateException) {
             logger!!.error("invalid token:$token")
         }
@@ -149,9 +145,9 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
     open fun getByApi(url: String, dumb: Boolean = true): String? {
         return try {
             httpClientProvide!!.getHttpClient()
-                    .get(url)
-                    .call()
-                    .string()
+                .get(url)
+                .call()
+                .string()
         } catch (e: SocketTimeoutException) {
             if (!dumb) {
                 logger!!.trace("$url connect timeout")
@@ -266,9 +262,9 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
     override fun removeToken(token: String) {
         updateTokens { properties ->
             val removedKeys = properties.entries
-                    .filter { it.value == token }
-                    .map { it.key }
-                    .toList()
+                .filter { it.value == token }
+                .map { it.key }
+                .toList()
             removedKeys.forEach { properties.remove(it) }
         }
     }

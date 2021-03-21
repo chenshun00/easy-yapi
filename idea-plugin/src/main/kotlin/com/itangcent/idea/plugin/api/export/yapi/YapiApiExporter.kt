@@ -20,25 +20,7 @@ class YapiApiExporter : AbstractYapiApiExporter() {
      * 找到服务器地址，开始导出
      */
     fun export() {
-        val serverFound = !yapiApiHelper!!.findServer().isNullOrBlank()
-        if (serverFound) {
-            doExport()
-        } else {
-            actionContext!!.runAsync {
-                Thread.sleep(200)
-                actionContext.runInSwingUI {
-                    val yapiServer = Messages.showInputDialog(project, "I请输入Yapi服务器地址", "Yapi服务器地址", Messages.getInformationIcon())
-                    if (yapiServer.isNullOrBlank()) {
-                        logger!!.info("No yapi server")
-                        return@runInSwingUI
-                    }
-
-                    yapiApiHelper.setYapiServer(yapiServer)
-
-                    doExport()
-                }
-            }
-        }
+        doExport()
     }
 
     private fun doExport() {
