@@ -38,7 +38,9 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
     protected val httpClientProvide: HttpClientProvider? = null
 
     @Volatile
-    var server: String? = null
+    var server = "http://yapi.raycloud.com"
+
+    private var api_server = "http://api.raycloud.com"
 
     private var projectIdCache: HashMap<String, String> = HashMap()//token->id
 
@@ -58,14 +60,6 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         val settings = settingBinder!!.read()
         settings.yapiServer = yapiServer
         settingBinder.save(settings)
-        Thread.sleep(200)
-        server = yapiServer.removeSuffix("/")
-    }
-
-    open fun getProjectWeb(module: String): String? {
-        val token = getPrivateToken(module)
-        val projectId = getProjectIdByToken(token!!) ?: return null
-        return "$server/project/$projectId/interface/api"
     }
 
     open protected fun findErrorMsg(res: String?): String? {
@@ -82,6 +76,9 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         return null
     }
 
+    /**
+     * 获取业务ID,其实就是看下边的接口
+     */
     override fun getProjectIdByToken(token: String): String? {
         var projectId = cacheLock.readLock().withLock { projectIdCache[token] }
         if (projectId != null) return projectId
@@ -101,6 +98,9 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         return projectId
     }
 
+    /**
+     * todo 这个接口算是比较core的了,根据token和可选的projectId获取项目信息
+     */
     override fun getProjectInfo(token: String, projectId: String?): JsonElement? {
         if (projectId != null) {
             val cachedProjectInfo = cacheLock.readLock().withLock { projectInfoCache[projectId] }
@@ -112,7 +112,7 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
             }
         }
 
-        var url = "$server$GET_PROJECT_URL?token=$token"
+        var url = "$api_server$GET_PROJECT_URL?token=$token"
         if (projectId != null) {
             url = "$url&id=$projectId"
         }
@@ -137,11 +137,17 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         return projectInfo
     }
 
+    /**
+     * 获取业务信息，但是这里还有哪些东西是必须的呢，不确定
+     */
     override fun getProjectInfo(token: String): JsonObject? {
         val projectId = getProjectIdByToken(token) ?: return null
         return getProjectInfo(token, projectId) as? JsonObject ?: return null
     }
 
+    /**
+     * 执行一次http请求【花里胡哨】
+     */
     open fun getByApi(url: String, dumb: Boolean = true): String? {
         return try {
             httpClientProvide!!.getHttpClient()
@@ -183,8 +189,12 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
      */
     private var tokenMap: HashMap<String, Pair<String, Boolean?>>? = null
 
+    /**
+     * 根据模块获取token
+     */
     override fun getPrivateToken(module: String): String? {
 
+        //授权是从缓存中进行读取
         cacheLock.readLock().withLock {
             if (tokenMap != null) {
                 val token = tokenMap!![module] ?: return null
@@ -214,6 +224,9 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         }
     }
 
+    /**
+     * 初始化;;;;;主要是读取文件
+     */
     private fun initToken() {
         tokenMap = HashMap()
         val settings = settingBinder!!.read()
@@ -224,6 +237,10 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         }
     }
 
+    /**
+     * 单机特定文件操作
+     * 从特定文件读取后又写入文件
+     */
     private fun updateTokens(handle: (Properties) -> Unit) {
 
         cacheLock.writeLock().withLock {
@@ -247,18 +264,30 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         }
     }
 
+    /**
+     * 单机操作
+     * 为某一个模块设置token
+     */
     override fun setToken(module: String, token: String) {
         updateTokens { properties ->
             properties[module] = token
         }
     }
 
+    /**
+     * 单机操作
+     * 根据模块移除token
+     */
     override fun removeTokenByModule(module: String) {
         updateTokens { properties ->
             properties.remove(module)
         }
     }
 
+    /**
+     * 单机操作
+     * 移除token/以及对应的模块
+     */
     override fun removeToken(token: String) {
         updateTokens { properties ->
             val removedKeys = properties.entries
@@ -269,6 +298,10 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         }
     }
 
+    /**
+     * 单机操作
+     * 获取缓存的token数据(重点在于理解这部分缓存的数据去哪里了)
+     */
     override fun readTokens(): HashMap<String, String> {
         if (tokenMap == null) {
             initToken()
@@ -277,7 +310,7 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
     }
 
     companion object {
-        const val GET_PROJECT_URL = "/api/project/get"
+        const val GET_PROJECT_URL = "/api/business/get"
         val NULL_PROJECT: JsonElement = JsonNull.INSTANCE
     }
 }

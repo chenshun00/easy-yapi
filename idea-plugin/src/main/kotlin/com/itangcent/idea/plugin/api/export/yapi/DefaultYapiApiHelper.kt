@@ -4,7 +4,6 @@ import com.google.gson.JsonElement
 import com.google.inject.Singleton
 import com.itangcent.common.logger.traceError
 import com.itangcent.common.utils.GsonUtils
-import com.itangcent.common.utils.KV
 import com.itangcent.http.contentType
 import com.itangcent.intellij.extend.asJsonElement
 import com.itangcent.intellij.extend.asList
@@ -117,8 +116,9 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
     }
 
     override fun addCart(token: String, name: String, desc: String): Boolean {
-        val projectId = getProjectIdByToken(token) ?: return false
-        return addCart(projectId, token, name, desc)
+        throw RuntimeException("当前已不支持自动生成业务模块,请后台手动设置业务模块")
+        //val projectId = getProjectIdByToken(token) ?: return false
+        //return addCart(projectId, token, name, desc)
     }
 
     /**
@@ -129,41 +129,42 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
      * @param desc 类目描述
      */
     override fun addCart(projectId: String, token: String, name: String, desc: String): Boolean {
-        try {
-            val returnValue = httpClientProvide!!.getHttpClient()
-                .post(server + ADD_CART)
-                .contentType(ContentType.APPLICATION_JSON)
-                .body(
-                    KV.create<Any?, Any?>()
-                        .set("desc", desc)
-                        .set("project_id", projectId)
-                        .set("name", name)
-                        .set("token", token)
-                )
-                .call()
-                .string()
-
-            val errMsg = findErrorMsg(returnValue)
-            if (StringUtils.isNotBlank(errMsg)) {
-                logger!!.info("Post failed:$errMsg")
-                return false
-            }
-            val resObj = returnValue?.asJsonElement()
-            val addCartId: String? = resObj.sub("data").sub("_id")?.asString
-            if (addCartId != null) {
-                cacheLock.writeLock().withLock {
-                    cartIdCache["$projectId$name"] = addCartId
-                }
-                logger!!.info("Add new cart:$server/project/$projectId/interface/api/cat_$addCartId")
-            } else {
-                logger!!.info("Add cart failed,response is:$returnValue")
-            }
-            cacheLock.writeLock().withLock { projectInfoCache.remove(projectId) }
-            return true
-        } catch (e: Throwable) {
-            logger!!.error("Post failed:" + ExceptionUtils.getStackTrace(e))
-            return false
-        }
+        throw RuntimeException("当前已不支持自动生成业务模块,请后台手动设置业务模块")
+//        try {
+//            val returnValue = httpClientProvide!!.getHttpClient()
+//                .post(server + ADD_CART)
+//                .contentType(ContentType.APPLICATION_JSON)
+//                .body(
+//                    KV.create<Any?, Any?>()
+//                        .set("desc", desc)
+//                        .set("project_id", projectId)
+//                        .set("name", name)
+//                        .set("token", token)
+//                )
+//                .call()
+//                .string()
+//
+//            val errMsg = findErrorMsg(returnValue)
+//            if (StringUtils.isNotBlank(errMsg)) {
+//                logger!!.info("Post failed:$errMsg")
+//                return false
+//            }
+//            val resObj = returnValue?.asJsonElement()
+//            val addCartId: String? = resObj.sub("data").sub("_id")?.asString
+//            if (addCartId != null) {
+//                cacheLock.writeLock().withLock {
+//                    cartIdCache["$projectId$name"] = addCartId
+//                }
+//                logger!!.info("Add new cart:$server/project/$projectId/interface/api/cat_$addCartId")
+//            } else {
+//                logger!!.info("Add cart failed,response is:$returnValue")
+//            }
+//            cacheLock.writeLock().withLock { projectInfoCache.remove(projectId) }
+//            return true
+//        } catch (e: Throwable) {
+//            logger!!.error("Post failed:" + ExceptionUtils.getStackTrace(e))
+//            return false
+//        }
     }
 
     override fun findApi(token: String, catId: String, apiName: String): String? {

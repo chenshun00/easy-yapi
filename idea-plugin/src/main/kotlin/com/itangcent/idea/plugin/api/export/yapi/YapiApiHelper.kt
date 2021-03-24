@@ -15,6 +15,9 @@ interface YapiApiHelper {
 
     fun getApiWeb(module: String, cartName: String, apiName: String): String?
 
+    /**
+     * 根据token和模块名字获取模块信息
+     */
     fun findCat(token: String, name: String): String?
 
     fun saveApiInfo(apiInfo: HashMap<String, Any?>): Pair<Boolean, String?>

@@ -79,8 +79,11 @@ open class AbstractYapiApiExporter {
     protected open fun getCartForDoc(folder: Folder, privateToken: String): CartInfo? {
 
         val name: String = folder.name ?: "anonymous"
+        if (name == "anonymous") {
+            throw RuntimeException("获取API类目失败,请参考使用文档#注释部分后重试")
+        }
 
-        var cartId: String?
+        val cartId: String?
 
         //try find existed cart.
         //根据名字尝试找到已经存在的类目ID
@@ -93,12 +96,7 @@ open class AbstractYapiApiExporter {
 
         //create new cart.
         if (cartId == null) {
-            if (yapiApiHelper.addCart(privateToken, name, folder.attr ?: "")) {
-                cartId = yapiApiHelper.findCat(privateToken, name)
-            } else {
-                //failed
-                return null
-            }
+            throw RuntimeException("获取API类目失败,请参考使用文档#注释部分后重试")
         }
 
         val cartInfo = CartInfo()
@@ -114,7 +112,7 @@ open class AbstractYapiApiExporter {
      */
     fun exportDoc(doc: Doc): Boolean {
         if (doc.resource == null) return false
-        //获取类目信息
+        //todo 获取类目信息
         val cartInfo = getCartForDoc(doc.resource!!) ?: return false
         return exportDoc(doc, cartInfo.privateToken!!, cartInfo.cartId!!)
     }
