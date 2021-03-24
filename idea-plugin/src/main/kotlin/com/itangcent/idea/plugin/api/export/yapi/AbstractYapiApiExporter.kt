@@ -96,7 +96,7 @@ open class AbstractYapiApiExporter {
 
         //create new cart.
         if (cartId == null) {
-            throw RuntimeException("获取API类目失败,请参考使用文档#注释部分后重试")
+            throw RuntimeException("根据【$name】获取API类目失败,请参考使用文档#注释部分后重试")
         }
 
         val cartInfo = CartInfo()
