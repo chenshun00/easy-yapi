@@ -127,14 +127,7 @@ open class AbstractYapiApiExporter {
         apiInfos.forEach { apiInfo ->
             apiInfo["token"] = privateToken
             apiInfo["catid"] = cartId
-            apiInfo["switch_notice"] = switchNotice()
-            val saveApiInfo = yapiApiHelper!!.saveApiInfo(apiInfo)
-            ret = ret or saveApiInfo.first
-            logger!!.info("[saveInfo:${saveApiInfo.first}\t${saveApiInfo.second}]")
-            if (saveApiInfo.first) {
-                apiInfo["apiId"] = saveApiInfo.second
-            }
-            ret = ret or yapiApiHelper.saveApiInfoToApiDocPlatform(apiInfo)
+            ret = ret or yapiApiHelper!!.saveApiInfoToApiDocPlatform(apiInfo)
         }
         return ret
     }

@@ -57,9 +57,9 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
     }
 
     override fun setYapiServer(yapiServer: String) {
-        val settings = settingBinder!!.read()
-        settings.yapiServer = yapiServer
-        settingBinder.save(settings)
+//        val settings = settingBinder!!.read()
+//        settings.yapiServer = yapiServer
+//        settingBinder.save(settings)
     }
 
     open protected fun findErrorMsg(res: String?): String? {
@@ -85,7 +85,7 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         try {
             projectId = getProjectInfo(token, null)
                 ?.sub("data")
-                ?.sub("_id")
+                ?.sub("businessId")
                 ?.asString
         } catch (e: IllegalStateException) {
             logger!!.error("invalid token:$token")

@@ -28,11 +28,9 @@ import com.itangcent.idea.swing.SafeHashHelper
 import com.itangcent.idea.swing.Tooltipable
 import com.itangcent.idea.utils.SwingUtils
 import com.itangcent.intellij.context.ActionContext
-import com.itangcent.intellij.extend.asMap
 import com.itangcent.intellij.extend.guice.PostConstruct
 import com.itangcent.intellij.extend.rx.AutoComputer
 import com.itangcent.intellij.extend.rx.from
-import com.itangcent.intellij.extend.sub
 import com.itangcent.intellij.logger.Logger
 import com.itangcent.intellij.psi.PsiClassUtils
 import org.apache.commons.lang3.exception.ExceptionUtils
@@ -483,78 +481,78 @@ class YapiDashboardDialog : JDialog() {
 
     private fun loadYapiInfo() {
 
-        if (yapiApiHelper!!.findServer().isNullOrEmpty()) {
-            actionContext!!.runInSwingUI {
-                Messages.showErrorDialog(this,
-                        "load yapi info failed,no server be found", "Error")
-            }
-            return
-        }
-
-        actionContext!!.runInSwingUI {
-            //            yapiApiTree!!.dragEnabled = true
-            val treeNode = DefaultMutableTreeNode()
-            val rootTreeModel = DefaultTreeModel(treeNode, true)
-
-            actionContext!!.runAsync {
-
-                var projectNodes: ArrayList<DefaultMutableTreeNode>? = null
-                try {
-                    val yapiTokens = yapiApiHelper.readTokens()
-
-                    if (yapiTokens.isNullOrEmpty()) {
-                        actionContext!!.runInSwingUI {
-                            Messages.showErrorDialog(actionContext!!.instance(Project::class),
-                                    "No token be found", "Error")
-                        }
-                        return@runAsync
-                    }
-
-                    projectNodes = ArrayList()
-
-                    yapiTokens.values.stream().distinct().forEach { token ->
-
-                        logger!!.info("load token:$token")
-                        val projectId = yapiApiHelper.getProjectIdByToken(token)
-                        if (projectId.isNullOrBlank()) {
-                            return@forEach
-                        }
-
-                        val projectInfo = yapiApiHelper.getProjectInfo(token, projectId)
-                                .sub("data")
-                                ?.asMap()
-
-                        if (projectInfo.isNullOrEmpty()) {
-                            logger.info("invalid token:$token")
-                            return@forEach
-                        }
-
-                        val projectNode = YapiProjectNodeData(token, projectInfo).asTreeNode()
-                        treeNode.add(projectNode)
-                        projectNodes.add(projectNode)
-                        rootTreeModel.reload(projectNode)
-                    }
-                } catch (e: Exception) {
-                    logger!!.error("error to load yapi info:" + ExceptionUtils.getStackTrace(e))
-                }
-
-                actionContext!!.runInSwingUI {
-                    yapiApiTree!!.model = rootTreeModel
-
-                    yapiLoadFuture = actionContext!!.runAsync {
-                        Thread.sleep(500)
-                        if (projectNodes != null) {
-                            for (projectNode in projectNodes) {
-                                if (disposed) break
-                                Thread.sleep(500)
-                                loadYapiProject(projectNode)
-                            }
-                        }
-                        yapiLoadFuture = null
-                    }
-                }
-            }
-        }
+//        if (yapiApiHelper!!.findServer().isNullOrEmpty()) {
+//            actionContext!!.runInSwingUI {
+//                Messages.showErrorDialog(this,
+//                        "load yapi info failed,no server be found", "Error")
+//            }
+//            return
+//        }
+//
+//        actionContext!!.runInSwingUI {
+//            //            yapiApiTree!!.dragEnabled = true
+//            val treeNode = DefaultMutableTreeNode()
+//            val rootTreeModel = DefaultTreeModel(treeNode, true)
+//
+//            actionContext!!.runAsync {
+//
+//                var projectNodes: ArrayList<DefaultMutableTreeNode>? = null
+//                try {
+//                    val yapiTokens = yapiApiHelper.readTokens()
+//
+//                    if (yapiTokens.isNullOrEmpty()) {
+//                        actionContext!!.runInSwingUI {
+//                            Messages.showErrorDialog(actionContext!!.instance(Project::class),
+//                                    "No token be found", "Error")
+//                        }
+//                        return@runAsync
+//                    }
+//
+//                    projectNodes = ArrayList()
+//
+//                    yapiTokens.values.stream().distinct().forEach { token ->
+//
+//                        logger!!.info("load token:$token")
+//                        val projectId = yapiApiHelper.getProjectIdByToken(token)
+//                        if (projectId.isNullOrBlank()) {
+//                            return@forEach
+//                        }
+//
+//                        val projectInfo = yapiApiHelper.getProjectInfo(token, projectId)
+//                                .sub("data")
+//                                ?.asMap()
+//
+//                        if (projectInfo.isNullOrEmpty()) {
+//                            logger.info("invalid token:$token")
+//                            return@forEach
+//                        }
+//
+//                        val projectNode = YapiProjectNodeData(token, projectInfo).asTreeNode()
+//                        treeNode.add(projectNode)
+//                        projectNodes.add(projectNode)
+//                        rootTreeModel.reload(projectNode)
+//                    }
+//                } catch (e: Exception) {
+//                    logger!!.error("error to load yapi info:" + ExceptionUtils.getStackTrace(e))
+//                }
+//
+//                actionContext!!.runInSwingUI {
+//                    yapiApiTree!!.model = rootTreeModel
+//
+//                    yapiLoadFuture = actionContext!!.runAsync {
+//                        Thread.sleep(500)
+//                        if (projectNodes != null) {
+//                            for (projectNode in projectNodes) {
+//                                if (disposed) break
+//                                Thread.sleep(500)
+//                                loadYapiProject(projectNode)
+//                            }
+//                        }
+//                        yapiLoadFuture = null
+//                    }
+//                }
+//            }
+//        }
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -625,66 +623,66 @@ class YapiDashboardDialog : JDialog() {
     @Suppress("UNCHECKED_CAST")
     private fun importNewYapiProject() {
 
-        //todo:input token and module at one dialog
-        actionContext!!.runInSwingUI {
-            val projectToken = Messages.showInputDialog(this,
-                    "Input Project Token",
-                    "Project Token",
-                    Messages.getInformationIcon())
-            if (projectToken.isNullOrBlank()) return@runInSwingUI
-
-            actionContext!!.runAsync {
-
-                val projectId = yapiApiHelper!!.getProjectIdByToken(projectToken)
-
-                if (projectId.isNullOrEmpty()) {
-                    return@runAsync
-                }
-
-                val projectInfo = yapiApiHelper.getProjectInfo(projectToken, projectId)
-                        .sub("data")
-                        ?.asMap()
-
-                if (projectInfo.isNullOrEmpty()) {
-                    logger!!.error("invalid token:$projectToken")
-                    return@runAsync
-                }
-
-                actionContext!!.runInSwingUI {
-                    val yapiProjectName = projectInfo["name"].toString()
-                    val moduleName = Messages.showInputDialog(this,
-                            "Input Module Name Of Project",
-                            "Module Name",
-                            Messages.getInformationIcon(),
-                            yapiProjectName,
-                            null)
-
-                    @Suppress("LABEL_NAME_CLASH")
-                    if (moduleName.isNullOrBlank()) return@runInSwingUI
-
-                    actionContext!!.runAsync {
-
-                        yapiApiHelper.setToken(moduleName, projectToken)
-                        actionContext!!.runInSwingUI {
-                            val projectTreeNode = YapiProjectNodeData(projectToken, projectInfo).asTreeNode()
-                            var model = yapiApiTree!!.model
-                            if (model == null) {
-                                val treeNode = DefaultMutableTreeNode()
-                                model = DefaultTreeModel(treeNode, true)
-                                yapiApiTree!!.model = model
-                            }
-
-                            val yapiTreeModel = model as DefaultTreeModel
-
-                            (yapiTreeModel.root as DefaultMutableTreeNode).add(projectTreeNode)
-                            yapiTreeModel.reload()
-
-                            loadYapiProject(projectTreeNode)
-                        }
-                    }
-                }
-            }
-        }
+//        //todo:input token and module at one dialog
+//        actionContext!!.runInSwingUI {
+//            val projectToken = Messages.showInputDialog(this,
+//                    "Input Project Token",
+//                    "Project Token",
+//                    Messages.getInformationIcon())
+//            if (projectToken.isNullOrBlank()) return@runInSwingUI
+//
+//            actionContext!!.runAsync {
+//
+//                val projectId = yapiApiHelper!!.getProjectIdByToken(projectToken)
+//
+//                if (projectId.isNullOrEmpty()) {
+//                    return@runAsync
+//                }
+//
+//                val projectInfo = yapiApiHelper.getProjectInfo(projectToken, projectId)
+//                        .sub("data")
+//                        ?.asMap()
+//
+//                if (projectInfo.isNullOrEmpty()) {
+//                    logger!!.error("invalid token:$projectToken")
+//                    return@runAsync
+//                }
+//
+//                actionContext!!.runInSwingUI {
+//                    val yapiProjectName = projectInfo["name"].toString()
+//                    val moduleName = Messages.showInputDialog(this,
+//                            "Input Module Name Of Project",
+//                            "Module Name",
+//                            Messages.getInformationIcon(),
+//                            yapiProjectName,
+//                            null)
+//
+//                    @Suppress("LABEL_NAME_CLASH")
+//                    if (moduleName.isNullOrBlank()) return@runInSwingUI
+//
+//                    actionContext!!.runAsync {
+//
+//                        yapiApiHelper.setToken(moduleName, projectToken)
+//                        actionContext!!.runInSwingUI {
+//                            val projectTreeNode = YapiProjectNodeData(projectToken, projectInfo).asTreeNode()
+//                            var model = yapiApiTree!!.model
+//                            if (model == null) {
+//                                val treeNode = DefaultMutableTreeNode()
+//                                model = DefaultTreeModel(treeNode, true)
+//                                yapiApiTree!!.model = model
+//                            }
+//
+//                            val yapiTreeModel = model as DefaultTreeModel
+//
+//                            (yapiTreeModel.root as DefaultMutableTreeNode).add(projectTreeNode)
+//                            yapiTreeModel.reload()
+//
+//                            loadYapiProject(projectTreeNode)
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
     }
 

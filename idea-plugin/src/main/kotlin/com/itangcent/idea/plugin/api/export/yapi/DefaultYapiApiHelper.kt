@@ -53,8 +53,8 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
                 ?.sub("cat")
                 ?.asJsonArray
             cats?.forEach { cat ->
-                if (cat.sub("name")?.asString == name) {
-                    cachedCartId = cat.sub("_id")!!
+                if (cat.sub("modelName")?.asString == name) {
+                    cachedCartId = cat.sub("modelId")!!
                         .asString
                     if (cachedCartId != null) {
                         cacheLock.writeLock().withLock {
