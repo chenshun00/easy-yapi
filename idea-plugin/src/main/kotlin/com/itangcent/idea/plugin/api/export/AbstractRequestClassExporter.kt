@@ -169,7 +169,12 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
     }
 
     open protected fun shouldIgnoreAnnotation(explicitMethod: ExplicitMethod): Boolean {
-        return annotationHelper!!.findAttrAsString(explicitMethod.psi(), "com.raycloud.yapi.api.Ignore") != null
+        val findAnnMaps: List<Map<String, Any?>> =
+            annotationHelper!!.findAnnMaps(explicitMethod.psi(), "com.raycloud.yapi.api.Ignore") ?: return true
+        if (findAnnMaps.size == 0) {
+            return false
+        }
+        return true
     }
 
     /**
