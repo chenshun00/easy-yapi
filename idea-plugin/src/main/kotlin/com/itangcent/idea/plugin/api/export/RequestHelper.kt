@@ -18,6 +18,8 @@ interface RequestHelper {
 
     fun setSession(request: Request, session: Boolean)
 
+    fun setAction(request: Request, action: String)
+
     /**
      * addAsJsonBody if content-type is json
      * otherwise addAsForm

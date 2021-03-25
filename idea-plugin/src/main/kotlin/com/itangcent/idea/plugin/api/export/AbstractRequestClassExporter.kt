@@ -521,6 +521,9 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         } else {
             requestHelper.setSession(request, false);
         }
+        val action = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_ACTION)
+            ?: throw RuntimeException("请在方法${method.name()}上添加${SpringClassName.API_ACTION}注解,申明Action")
+        requestHelper.setAction(request, action)
         //参数不为空
         if (params.isNotEmpty()) {
 
