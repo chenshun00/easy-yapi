@@ -11,7 +11,8 @@ class SpringClassName {
             mutableSetOf(
                 "org.springframework.stereotype.Controller",
                 "org.springframework.web.bind.annotation.RestController",
-                "com.raycloud.yapi.api.Path"
+                "com.raycloud.yapi.api.Path",
+                "com.raycloud.qnee.sdk.api.internal.annotation.ServiceMethodBean"
             )
 
         //file
