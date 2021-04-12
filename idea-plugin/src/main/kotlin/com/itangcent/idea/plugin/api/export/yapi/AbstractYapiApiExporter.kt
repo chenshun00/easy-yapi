@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import com.intellij.openapi.project.Project
 import com.itangcent.common.logger.traceError
 import com.itangcent.common.model.Doc
+import com.itangcent.common.utils.GsonUtils
 import com.itangcent.common.utils.KV
 import com.itangcent.idea.plugin.api.export.ClassExporter
 import com.itangcent.idea.plugin.api.export.Folder
@@ -111,9 +112,12 @@ open class AbstractYapiApiExporter {
      * 正式导出文档
      */
     fun exportDoc(doc: Doc): Boolean {
+        logger!!.info("[开始导出文档1]")
         if (doc.resource == null) return false
+        logger.info("[开始导出文档2]")
         //todo 获取类目信息
         val cartInfo = getCartForDoc(doc.resource!!) ?: return false
+        logger.info("[获取类目信息]" + cartInfo.cartName)
         return exportDoc(doc, cartInfo.privateToken!!, cartInfo.cartId!!)
     }
 
@@ -122,6 +126,7 @@ open class AbstractYapiApiExporter {
      */
     open fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
         val apiInfos = yapiFormatter!!.doc2Item(doc)
+        logger!!.info("api info:${GsonUtils.toJson(apiInfos)}")
         check(apiInfos)
         var ret = false
         apiInfos.forEach { apiInfo ->
@@ -146,17 +151,4 @@ open class AbstractYapiApiExporter {
 
     }
 
-
-    protected fun switchNotice(): Boolean {
-        return settingBinder!!.read().switchNotice
-    }
-
-    companion object {
-        const val NULL_RESOURCE = "unknown"
-    }
-
 }
-
-//private operator fun Any?.get(s: String): Any {
-//    TODO("Not yet implemented")
-//}

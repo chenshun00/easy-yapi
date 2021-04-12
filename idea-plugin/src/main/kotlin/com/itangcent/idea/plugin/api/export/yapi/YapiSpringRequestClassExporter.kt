@@ -28,8 +28,8 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
         val tags = ruleComputer!!.computer(YapiClassExportRuleKeys.TAG, method)
         if (tags.notNullOrEmpty()) {
             request.setTags(StringUtils.split(tags, configReader!!.first("api.tag.delimiter") ?: ",\n")
-                    .map { it.trim() }
-                    .filter { it.isNotBlank() })
+                .map { it.trim() }
+                .filter { it.isNotBlank() })
         }
 
         val status = ruleComputer.computer(YapiClassExportRuleKeys.STATUS, method)
@@ -46,9 +46,9 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
             requestHelper!!.setMethodIfMissed(request, HttpMethod.POST)
             requestHelper.addHeader(request, "Content-Type", "application/json")
             requestHelper.setJsonBody(
-                    request,
-                    typeObject,
-                    paramDesc
+                request,
+                typeObject,
+                paramDesc
             )
             return
         }
@@ -56,9 +56,11 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
         //ModelAttr(form)
         if (isModelAttr(parameter.psi())) {
             if (request.method == HttpMethod.NO_METHOD) {
-                requestHelper!!.setMethod(request,
-                        ruleComputer!!.computer(ClassExportRuleKeys.METHOD_DEFAULT_HTTP_METHOD, parameter.containMethod())
-                                ?: HttpMethod.POST)
+                requestHelper!!.setMethod(
+                    request,
+                    ruleComputer!!.computer(ClassExportRuleKeys.METHOD_DEFAULT_HTTP_METHOD, parameter.containMethod())
+                        ?: HttpMethod.POST
+                )
             }
             if (request.method == HttpMethod.GET) {
                 addParamAsQuery(parameter, request, typeObject)
@@ -141,16 +143,18 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                 required = true
             }
 
-            requestHelper!!.appendDesc(request, if (required) {
-                "\nNeed cookie:$cookieName ($ultimateComment)"
-            } else {
-                val defaultValue = findDefaultValue(cookieValueAnn)
-                if (defaultValue.isNullOrBlank()) {
-                    "\nCookie:$cookieName ($ultimateComment)"
+            requestHelper!!.appendDesc(
+                request, if (required) {
+                    "\nNeed cookie:$cookieName ($ultimateComment)"
                 } else {
-                    "\nCookie:$cookieName=$defaultValue ($ultimateComment)"
+                    val defaultValue = findDefaultValue(cookieValueAnn)
+                    if (defaultValue.isNullOrBlank()) {
+                        "\nCookie:$cookieName ($ultimateComment)"
+                    } else {
+                        "\nCookie:$cookieName=$defaultValue ($ultimateComment)"
+                    }
                 }
-            })
+            )
 
             return
         }
@@ -182,13 +186,15 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
 
         if (request.method == HttpMethod.GET) {
             addParamAsQuery(parameter, request, typeObject, ultimateComment)
-                    .trySetDemo(demo)
+                .trySetDemo(demo)
             return
         }
 
         if (paramType.isNullOrBlank()) {
-            paramType = ruleComputer.computer(ClassExportRuleKeys.PARAM_HTTP_TYPE,
-                    parameter)
+            paramType = ruleComputer.computer(
+                ClassExportRuleKeys.PARAM_HTTP_TYPE,
+                parameter
+            )
         }
 
         if (paramType.notNullOrBlank()) {
@@ -196,41 +202,42 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                 "body" -> {
                     requestHelper!!.setMethodIfMissed(request, HttpMethod.POST)
                     setRequestBody(request, typeObject, ultimateComment)
-                            .trySetDemo(demo)
+                        .trySetDemo(demo)
                     return
                 }
                 "form" -> {
                     requestHelper!!.setMethodIfMissed(request, HttpMethod.POST)
                     addParamAsForm(parameter, request, parameter.defaultVal ?: typeObject, ultimateComment)
-                            .trySetDemo(demo)
+                        .trySetDemo(demo)
                     return
                 }
                 "query" -> {
                     addParamAsQuery(parameter, request, parameter.defaultVal ?: typeObject, ultimateComment)
-                            .trySetDemo(demo)
+                        .trySetDemo(demo)
                     return
                 }
                 else -> {
-                    logger!!.warn("Unknown param type:$paramType." +
-                            "Return of rule `param.without.ann.type`" +
-                            "should be `body/form/query`")
+                    logger!!.warn(
+                        "Unknown param type:$paramType." +
+                                "Return of rule `param.without.ann.type`" +
+                                "should be `body/form/query`"
+                    )
                 }
             }
         }
 
         if (typeObject.hasFile()) {
             addParamAsForm(parameter, request, typeObject, ultimateComment)
-                    .trySetDemo(demo)
+                .trySetDemo(demo)
             return
         }
 
         if (parameter.defaultVal != null) {
-            requestHelper!!.addParam(request,
-                    parameter.name()
-                    , parameter.defaultVal.toString()
-                    , parameter.required ?: false
-                    , ultimateComment)
-                    .trySetDemo(demo)
+            requestHelper!!.addParam(
+                request,
+                parameter.name(), parameter.defaultVal.toString(), parameter.required ?: false, ultimateComment
+            )
+                .trySetDemo(demo)
             return
         }
 
@@ -242,7 +249,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
 
         //else
         addParamAsQuery(parameter, request, typeObject, ultimateComment)
-                .trySetDemo(demo)
+            .trySetDemo(demo)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -251,28 +258,33 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
         try {
             if (typeObject == Magics.FILE_STR) {
                 return requestHelper!!.addFormFileParam(
-                        request, parameter.name(),
-                        parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
-                        ?: false, paramDesc
+                    request, parameter.name(),
+                    parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
+                    ?: false, paramDesc
                 )
             } else if (typeObject != null && typeObject is Map<*, *>) {
                 if (request.hasBodyOrForm() && formExpanded() && typeObject.isComplex()
-                        && requestHelper!!.addHeaderIfMissed(request, "Content-Type", "multipart/form-data")) {
+                    && requestHelper!!.addHeaderIfMissed(request, "Content-Type", "multipart/form-data")
+                ) {
                     typeObject.flatValid(object : FieldConsumer {
                         override fun consume(parent: Map<*, *>?, path: String, key: String, value: Any?) {
                             val fv = deepComponent(value)
                             if (fv == Magics.FILE_STR) {
                                 requestHelper.addFormFileParam(
-                                        request, path,
-                                        parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
-                                        KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
+                                    request, path,
+                                    parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
+                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
                                 ).setDemo(parent?.getAs(Attrs.DEMO_ATTR, key))
                             } else {
-                                requestHelper.addFormParam(
+                                if (!path.contains(".") && path != "traceId") {
+                                    val get = typeObject[key]
+                                    requestHelper.addFormParam(
                                         request, path, tinyQueryParam(value.toString()),
                                         parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
-                                        KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
-                                ).setDemo(parent?.getAs(Attrs.DEMO_ATTR, key))
+                                        KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key),
+                                        yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
+                                    ).setDemo(parent?.getAs(Attrs.DEMO_ATTR, key))
+                                }
                             }
                         }
                     })
@@ -288,26 +300,27 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                                 logger!!.warn("try upload file at `GET:`${request.path}")
                             }
                             requestHelper!!.addFormFileParam(
-                                    request, filedName,
-                                    required?.getAs(filedName) ?: false,
-                                    KVUtils.getUltimateComment(comment, filedName)
+                                request, filedName,
+                                required?.getAs(filedName) ?: false,
+                                KVUtils.getUltimateComment(comment, filedName)
                             ).setDemo(demo?.getAs(filedName))
                         } else {
                             val get = typeObject[filedName]
-                            requestHelper!!.addParamAndTypeAndSubType(request, filedName,
-                                    null,
-                                    required?.getAs(filedName)
-                                            ?: false, KVUtils.getUltimateComment(comment, filedName),
-                                    yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
+                            requestHelper!!.addParamAndTypeAndSubType(
+                                request, filedName,
+                                null,
+                                required?.getAs(filedName)
+                                    ?: false, KVUtils.getUltimateComment(comment, filedName),
+                                yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
                             ).setDemo(demo?.getAs(filedName))
                         }
                     }
                 }
             } else {
                 return requestHelper!!.addParamAndTypeAndSubType(
-                        request, parameter.name(), tinyQueryParam(typeObject?.toString()),
-                        parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
-                        ?: false, paramDesc, yapiFormatter!!.getTypeOfInput(typeObject), yapiFormatter.getSubTypeOfType(typeObject)
+                    request, parameter.name(), tinyQueryParam(typeObject?.toString()),
+                    parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
+                    ?: false, paramDesc, yapiFormatter!!.getTypeOfInput(typeObject), yapiFormatter.getSubTypeOfType(typeObject)
                 )
             }
         } catch (e: Exception) {
@@ -322,27 +335,30 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
         try {
             if (typeObject == Magics.FILE_STR) {
                 return requestHelper!!.addFormFileParam(
-                        request, parameter.name(),
-                        parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
-                        ?: false, paramDesc
+                    request, parameter.name(),
+                    parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
+                    ?: false, paramDesc
                 )
             } else if (typeObject != null && typeObject is Map<*, *>) {
                 if (formExpanded() && typeObject.isComplex()
-                        && requestHelper!!.addHeaderIfMissed(request, "Content-Type", "multipart/form-data")) {
+                    && requestHelper!!.addHeaderIfMissed(request, "Content-Type", "multipart/form-data")
+                ) {
                     typeObject.flatValid(object : FieldConsumer {
                         override fun consume(parent: Map<*, *>?, path: String, key: String, value: Any?) {
                             val fv = deepComponent(value)
                             if (fv == Magics.FILE_STR) {
                                 requestHelper.addFormFileParam(
-                                        request, path,
-                                        parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
-                                        KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
+                                    request, path,
+                                    parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
+                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
                                 )
                             } else {
+                                val get = typeObject[key]
                                 requestHelper.addFormParam(
-                                        request, path, tinyQueryParam(value.toString()),
-                                        parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
-                                        KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
+                                    request, path, tinyQueryParam(value.toString()),
+                                    parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
+                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key),
+                                    yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
                                 )
                             }
                         }
@@ -357,25 +373,27 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                         val fv = deepComponent(fieldVal)
                         if (fv == Magics.FILE_STR) {
                             requestHelper.addFormFileParam(
-                                    request, filedName,
-                                    required?.getAs(filedName) ?: false,
-                                    KVUtils.getUltimateComment(comment, filedName)
+                                request, filedName,
+                                required?.getAs(filedName) ?: false,
+                                KVUtils.getUltimateComment(comment, filedName)
                             ).setDemo(demo?.getAs(filedName))
                         } else {
+                            val get = typeObject[filedName]
                             requestHelper.addFormParam(
-                                    request, filedName, null,
-                                    required?.getAs(filedName) ?: false,
-                                    KVUtils.getUltimateComment(comment, filedName)
+                                request, filedName, null,
+                                required?.getAs(filedName) ?: false,
+                                KVUtils.getUltimateComment(comment, filedName),
+                                yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
                             ).setDemo(demo?.getAs(filedName))
                         }
                     }
                 }
             } else {
                 return requestHelper!!.addFormParam(
-                        request, parameter.name(), tinyQueryParam(typeObject?.toString()),
-                        parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
-                        ?: false,
-                        paramDesc
+                    request, parameter.name(), tinyQueryParam(typeObject?.toString()),
+                    parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
+                    ?: false,
+                    paramDesc, "string", null
                 )
             }
         } catch (e: Exception) {
@@ -394,8 +412,10 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                 val value = params.substringAfter("!=").trim()
                 val param = request.querys?.find { it.name == name }
                 if (param == null) {
-                    requestHelper!!.appendDesc(request, "parameter [$name] " +
-                            "should not equal to [$value]")
+                    requestHelper!!.appendDesc(
+                        request, "parameter [$name] " +
+                                "should not equal to [$value]"
+                    )
                 } else {
                     param.desc = param.desc.append("should not equal to [$value]", "\n")
                 }
@@ -435,9 +455,11 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
         }
     }
 
-    protected open fun addParamToPath(request: Request,
-                                      paramName: String,
-                                      value: String) {
+    protected open fun addParamToPath(
+        request: Request,
+        paramName: String,
+        value: String
+    ) {
         request.path = (request.path ?: URL.nil()).map { path ->
             if (path != null) {
                 if (path.endsWith('?')) {

@@ -17,4 +17,6 @@ class FormParam : SimpleExtensible(), Serializable {
      * text/file
      */
     var type: String? = null
+
+    var subType: String? = null
 }

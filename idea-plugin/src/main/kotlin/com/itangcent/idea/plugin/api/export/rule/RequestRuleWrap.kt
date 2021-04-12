@@ -152,30 +152,30 @@ class RequestRuleWrap(private val request: Request) {
         }
     }
 
-    fun addFormParam(paramName: String, defaultVal: String?, desc: String?) {
-        requestHelper.addFormParam(request, paramName, defaultVal, desc)
-    }
+//    fun addFormParam(paramName: String, defaultVal: String?, desc: String?) {
+//        requestHelper.addFormParam(request, paramName, defaultVal, desc)
+//    }
+//
+//    fun addFormParam(paramName: String, defaultVal: String?, required: Boolean?, desc: String?) {
+//        requestHelper.addFormParam(request, paramName, defaultVal, required ?: true, desc)
+//    }
+//
+//    fun setFormParam(paramName: String, defaultVal: String?, required: Boolean?, desc: String?) {
+//        val param = request.formParams?.firstOrNull { it.name == paramName }
+//        if (param == null) {
+//            requestHelper.addFormParam(request, paramName, defaultVal, required ?: true, desc)
+//        } else {
+//            if (param.value.anyIsNullOrBlank() && defaultVal.notNullOrBlank()) {
+//                param.value = defaultVal
+//            }
+//            param.desc = param.desc.append(desc)
+//            param.required = required
+//        }
+//    }
 
-    fun addFormParam(paramName: String, defaultVal: String?, required: Boolean?, desc: String?) {
-        requestHelper.addFormParam(request, paramName, defaultVal, required ?: true, desc)
-    }
-
-    fun setFormParam(paramName: String, defaultVal: String?, required: Boolean?, desc: String?) {
-        val param = request.formParams?.firstOrNull { it.name == paramName }
-        if (param == null) {
-            requestHelper.addFormParam(request, paramName, defaultVal, required ?: true, desc)
-        } else {
-            if (param.value.anyIsNullOrBlank() && defaultVal.notNullOrBlank()) {
-                param.value = defaultVal
-            }
-            param.desc = param.desc.append(desc)
-            param.required = required
-        }
-    }
-
-    fun addFormFileParam(paramName: String, required: Boolean?, desc: String?) {
-        requestHelper.addFormFileParam(request, paramName, required ?: true, desc)
-    }
+//    fun addFormFileParam(paramName: String, required: Boolean?, desc: String?) {
+//        requestHelper.addFormFileParam(request, paramName, required ?: true, desc)
+//    }
 
     fun setFormFileParam(paramName: String, required: Boolean?, desc: String?) {
         val param = request.formParams?.firstOrNull { it.name == paramName }

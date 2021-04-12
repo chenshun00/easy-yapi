@@ -14,6 +14,7 @@ import com.itangcent.idea.plugin.StatusRecorder
 import com.itangcent.idea.plugin.Worker
 import com.itangcent.idea.plugin.WorkerStatus
 import com.itangcent.idea.plugin.api.MethodInferHelper
+import com.itangcent.idea.plugin.api.export.yapi.YapiFormatter
 import com.itangcent.idea.plugin.settings.SettingBinder
 import com.itangcent.idea.plugin.settings.group.JsonSetting
 import com.itangcent.idea.plugin.utils.SpringClassName
@@ -110,6 +111,9 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
     @Inject
     private val contextSwitchListener: ContextSwitchListener? = null
 
+    @Inject
+    private val yapiFormatter: YapiFormatter? = null
+
     override fun export(cls: Any, docHandle: DocHandle): Boolean {
         if (cls !is PsiClass) return false
         contextSwitchListener?.switchTo(cls)
@@ -192,13 +196,17 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         request.resource = PsiMethodResource(method.psi(), psiClass)
         //这部分比较简单
         processMethod(method, kv, request)
+        logger!!.info("开始处理请求参数")
         //参数部分和响应部分比较复杂
         processMethodParameters(method, request)
         //处理响应
+        logger.info("开始处理响应参数")
         processResponse(method, request)
         //处理完成?
+        logger.info("开始processCompleted")
         processCompleted(method, kv, request)
         //开始暴露
+        logger.info("开始docHandle")
         docHandle(request)
     }
 
@@ -643,10 +651,12 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                                     KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
                                 )
                             } else {
+                                val get = typeObject[key]
                                 requestHelper.addFormParam(
                                     request, path, tinyQueryParam(value.toString()),
                                     parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
-                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
+                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key),
+                                    yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
                                 )
                             }
                         }
@@ -711,10 +721,12 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                                     KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
                                 )
                             } else {
+                                val get = typeObject[key]
                                 requestHelper.addFormParam(
                                     request, path, tinyQueryParam(value.toString()),
                                     parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
-                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
+                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key),
+                                    yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
                                 )
                             }
                         }
@@ -733,10 +745,12 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                                 KVUtils.getUltimateComment(comment, filedName)
                             )
                         } else {
+                            val get = typeObject[filedName]
                             requestHelper.addFormParam(
                                 request, filedName, null,
                                 required?.getAs(filedName) ?: false,
-                                KVUtils.getUltimateComment(comment, filedName)
+                                KVUtils.getUltimateComment(comment, filedName),
+                                yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
                             )
                         }
                     }
@@ -745,7 +759,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                 requestHelper!!.addFormParam(
                     request, parameter.name(), tinyQueryParam(typeObject?.toString()),
                     parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
-                    ?: false, paramDesc
+                    ?: false, paramDesc, "string", null
                 )
             }
         } catch (e: Exception) {

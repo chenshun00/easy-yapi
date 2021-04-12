@@ -97,16 +97,25 @@ fun RequestHelper.addParamAndTypeAndSubType(
 }
 
 fun RequestHelper.addFormParam(request: Request, paramName: String, defaultVal: String?, desc: String?) {
-    addFormParam(request, paramName, defaultVal, false, desc)
+    addFormParam(request, paramName, defaultVal, false, desc, "string", null)
 }
 
-fun RequestHelper.addFormParam(request: Request, paramName: String, defaultVal: String?, required: Boolean, desc: String?): FormParam {
+fun RequestHelper.addFormParam(
+    request: Request,
+    paramName: String,
+    defaultVal: String?,
+    required: Boolean,
+    desc: String?,
+    type: String?,
+    subType: String?
+): FormParam {
     val param = FormParam()
     param.name = paramName
     param.value = defaultVal
     param.required = required
     param.desc = desc
-    param.type = "text"
+    param.type = type
+    param.subType = subType
     this.addFormParam(request, param)
     return param
 }
