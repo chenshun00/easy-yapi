@@ -130,15 +130,20 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                     return true
                 }
                 else -> {
-                    logger!!.info("${this.javaClass.simpleName}:search api from:${cls.qualifiedName}")
-
+                    logger!!.info("${this.javaClass.simpleName}:2search api from:${cls.qualifiedName}")
+                    logger!!.info("${this.javaClass.simpleName}:2search api from:${cls.qualifiedName}")
+                    logger.info("here here")
                     val kv = KV.create<String, Any?>()
+                    logger.info("here here1")
                     //处理class文件,主要是获取path和method
                     processClass(cls, kv)
+                    logger.info("here here2")
                     //遍历处理文件中的method了
                     foreachMethod(cls) { explicitMethod ->
                         val method = explicitMethod.psi()
+                        logger.info("here here3")
                         //被Spring的注解标记
+                        logger.info("[API:${isApi(method) && methodFilter?.checkMethod(method) != false}]")
                         if (isApi(method) && methodFilter?.checkMethod(method) != false) {
                             try {
                                 //kv.put(method.)
@@ -173,12 +178,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
     }
 
     open protected fun shouldIgnoreAnnotation(explicitMethod: ExplicitMethod): Boolean {
-        val findAnnMaps: List<Map<String, Any?>> =
-            annotationHelper!!.findAnnMaps(explicitMethod.psi(), "com.raycloud.yapi.api.Ignore") ?: return true
-        if (findAnnMaps.size == 0) {
-            return false
-        }
-        return true
+        return annotationHelper!!.findAttrAsString(explicitMethod.psi(), "com.raycloud.yapi.api.Ignore") != null
     }
 
     /**
@@ -188,7 +188,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         psiClass: PsiClass, method: ExplicitMethod, kv: KV<String, Any?>,
         docHandle: DocHandle
     ) {
-
+        logger!!.info("check here")
         actionContext!!.checkStatus()
         //设置new Request()
         val request = Request()
@@ -485,19 +485,26 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
     }
 
     private fun foreachMethod(cls: PsiClass, handle: (ExplicitMethod) -> Unit) {
+        logger!!.info("[数量: ${duckTypeHelper!!.explicit(cls).methods().size}]")
         duckTypeHelper!!.explicit(cls)
             .methods()
             .stream()
-            //不是object方法
-            .filter { !jvmClassHelper!!.isBasicMethod(it.psi().name) }
-            //不是static方法
-            .filter { !it.psi().hasModifierProperty("static") }
-            //不是构造器方法
-            .filter { !it.psi().isConstructor }
-            //跳过不生成的
-            .filter { !shouldIgnore(it) }
+//            //不是object方法
+//            .filter { !jvmClassHelper!!.isBasicMethod(it.psi().name) }
+//            //不是static方法
+//            .filter { !it.psi().hasModifierProperty("static") }
+//            //不是构造器方法
+//            .filter { !it.psi().isConstructor }
+//            //跳过不生成的
+//            .filter { !shouldIgnore(it) }
+            .peek {
+                logger!!.info("[开始处理方法前:${it.name()}]")
+            }
             //跳过被标记的
             .filter { !shouldIgnoreAnnotation(it) }
+            .peek {
+                logger!!.info("[开始处理方法后:${it.name()}]")
+            }
             .forEach(handle)
     }
 

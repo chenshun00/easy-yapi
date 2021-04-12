@@ -99,6 +99,7 @@ open class DefaultMethodDocClassExporter : ClassExporter, Worker {
         actionContext!!.checkStatus()
         statusRecorder.newWork()
         try {
+            logger!!.info("fuck")
             when {
                 !hasApi(cls) -> return false
                 shouldIgnore(cls) -> {
@@ -106,7 +107,8 @@ open class DefaultMethodDocClassExporter : ClassExporter, Worker {
                     return true
                 }
                 else -> {
-                    logger!!.info("${this.javaClass.simpleName}:search api from:${cls.qualifiedName}")
+                    logger!!.info("${this.javaClass.simpleName}:1search api from:${cls.qualifiedName}")
+                    logger!!.info("${this.javaClass.simpleName}:1search api from:${cls.qualifiedName}")
 
                     val kv = KV.create<String, Any?>()
 
@@ -161,8 +163,8 @@ open class DefaultMethodDocClassExporter : ClassExporter, Worker {
     }
 
     private fun exportMethodApi(
-            psiClass: PsiClass, method: PsiMethod, kv: KV<String, Any?>,
-            docHandle: DocHandle
+        psiClass: PsiClass, method: PsiMethod, kv: KV<String, Any?>,
+        docHandle: DocHandle
     ) {
 
         actionContext!!.checkStatus()
@@ -216,7 +218,7 @@ open class DefaultMethodDocClassExporter : ClassExporter, Worker {
                             override fun linkToPsiElement(plainText: String, linkTo: Any?): String? {
 
                                 psiClassHelper!!.resolveEnumOrStatic(plainText, method, "")
-                                        ?.let { options.addAll(it) }
+                                    ?.let { options.addAll(it) }
 
                                 return super.linkToPsiElement(plainText, linkTo)
                             }
@@ -274,16 +276,16 @@ open class DefaultMethodDocClassExporter : ClassExporter, Worker {
                 var name: String? = null
                 var value: String? = null
                 paramDocTag.dataElements
-                        .asSequence()
-                        .map { it?.text }
-                        .filterNot { it.isNullOrBlank() }
-                        .forEach {
-                            when {
-                                name == null -> name = it
-                                value == null -> value = it
-                                else -> value += it
-                            }
+                    .asSequence()
+                    .map { it?.text }
+                    .filterNot { it.isNullOrBlank() }
+                    .forEach {
+                        when {
+                            name == null -> name = it
+                            value == null -> value = it
+                            else -> value += it
                         }
+                    }
                 if (StringUtils.isNoneBlank(name, value)) {
                     if (methodParamComment == null) methodParamComment = KV.create()
 
@@ -293,7 +295,7 @@ open class DefaultMethodDocClassExporter : ClassExporter, Worker {
                         override fun linkToPsiElement(plainText: String, linkTo: Any?): String? {
 
                             psiClassHelper!!.resolveEnumOrStatic(plainText, psiMethod, name!!)
-                                    ?.let { options.addAll(it) }
+                                ?.let { options.addAll(it) }
 
                             return super.linkToPsiElement(plainText, linkTo)
                         }
@@ -328,11 +330,11 @@ open class DefaultMethodDocClassExporter : ClassExporter, Worker {
 
     private fun foreachMethod(cls: PsiClass, handle: (PsiMethod) -> Unit) {
         jvmClassHelper!!.getAllMethods(cls)
-                .filter { !jvmClassHelper.isBasicMethod(it.name) }
-                .filter { !it.hasModifierProperty("static") }
-                .filter { !it.isConstructor }
-                .filter { !shouldIgnore(it) }
-                .forEach(handle)
+            .filter { !jvmClassHelper.isBasicMethod(it.name) }
+            .filter { !it.hasModifierProperty("static") }
+            .filter { !it.isConstructor }
+            .filter { !shouldIgnore(it) }
+            .forEach(handle)
     }
 
     private fun processMethodParameters(method: PsiMethod, methodDoc: MethodDoc) {
@@ -356,13 +358,15 @@ open class DefaultMethodDocClassExporter : ClassExporter, Worker {
     }
 
     protected fun processMethodParameter(
-            method: PsiMethod,
-            methodDoc: MethodDoc,
-            param: PsiParameter,
-            paramDesc: String?
+        method: PsiMethod,
+        methodDoc: MethodDoc,
+        param: PsiParameter,
+        paramDesc: String?
     ) {
-        val typeObject = psiClassHelper!!.getTypeObject(param.type, method,
-                jsonSetting!!.jsonOption(JsonOption.READ_COMMENT))
+        val typeObject = psiClassHelper!!.getTypeObject(
+            param.type, method,
+            jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
+        )
         methodDocHelper!!.addParam(methodDoc, param.name!!, typeObject, paramDesc)
     }
 
@@ -380,8 +384,10 @@ open class DefaultMethodDocClassExporter : ClassExporter, Worker {
                 methodInferHelper.inferReturn(method)
 //                actionContext!!.callWithTimeout(20000) { methodReturnInferHelper.inferReturn(method) }
             }
-            else -> psiClassHelper!!.getTypeObject(psiType, method,
-                    jsonSetting!!.jsonOption(JsonOption.READ_COMMENT))
+            else -> psiClassHelper!!.getTypeObject(
+                psiType, method,
+                jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
+            )
         }
     }
 
