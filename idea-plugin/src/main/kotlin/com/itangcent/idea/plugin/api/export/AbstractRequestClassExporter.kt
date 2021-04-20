@@ -120,7 +120,6 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         actionContext!!.checkStatus()
         statusRecorder.newWork()
         logger!!.info("${this.javaClass.simpleName}:2search api from:${cls.qualifiedName}")
-        logger!!.info("${this.javaClass.simpleName}:2search api from:${cls.qualifiedName}")
         try {
             //注意这里的when语法
             when {
@@ -132,20 +131,13 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                     return true
                 }
                 else -> {
-                    logger!!.info("${this.javaClass.simpleName}:2search api from:${cls.qualifiedName}")
-                    logger!!.info("${this.javaClass.simpleName}:2search api from:${cls.qualifiedName}")
-                    logger.info("here here")
                     val kv = KV.create<String, Any?>()
-                    logger.info("here here1")
                     //处理class文件,主要是获取path和method
                     processClass(cls, kv)
-                    logger.info("here here2")
                     //遍历处理文件中的method了
                     foreachMethod(cls) { explicitMethod ->
                         val method = explicitMethod.psi()
-                        logger.info("here here3")
                         //被Spring的注解标记
-                        logger.info("[API:${isApi(method) && methodFilter?.checkMethod(method) != false}]")
                         if (isApi(method) && methodFilter?.checkMethod(method) != false) {
                             try {
                                 //kv.put(method.)
@@ -190,7 +182,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         psiClass: PsiClass, method: ExplicitMethod, kv: KV<String, Any?>,
         docHandle: DocHandle
     ) {
-        logger!!.info("check here")
+//        logger!!.info("check here")
         actionContext!!.checkStatus()
         //设置new Request()
         val request = Request()
@@ -198,17 +190,17 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         request.resource = PsiMethodResource(method.psi(), psiClass)
         //这部分比较简单
         processMethod(method, kv, request)
-        logger!!.info("开始处理请求参数")
+//        logger!!.info("开始处理请求参数")
         //参数部分和响应部分比较复杂
         processMethodParameters(method, request)
         //处理响应
-        logger.info("开始处理响应参数")
+//        logger.info("开始处理响应参数")
         processResponse(method, request)
         //处理完成?
-        logger.info("开始processCompleted")
+//        logger.info("开始processCompleted")
         processCompleted(method, kv, request)
         //开始暴露
-        logger.info("开始docHandle")
+//        logger.info("开始docHandle")
         docHandle(request)
     }
 
@@ -495,14 +487,14 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
 //            .filter { !it.psi().isConstructor }
 //            //跳过不生成的
 //            .filter { !shouldIgnore(it) }
-            .peek {
-                logger!!.info("[开始处理方法前:${it.name()}]")
-            }
+//            .peek {
+//                logger!!.info("[开始处理方法前:${it.name()}]")
+//            }
             //跳过被标记的
             .filter { !shouldIgnoreAnnotation(it) }
-            .peek {
-                logger!!.info("[开始处理方法后:${it.name()}]")
-            }
+//            .peek {
+//                logger!!.info("[开始处理方法后:${it.name()}]")
+//            }
             .forEach(handle)
     }
 

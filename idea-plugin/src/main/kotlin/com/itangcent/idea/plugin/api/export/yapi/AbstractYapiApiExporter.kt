@@ -11,6 +11,7 @@ import com.itangcent.idea.plugin.api.export.Folder
 import com.itangcent.idea.plugin.api.export.FormatFolderHelper
 import com.itangcent.idea.plugin.settings.SettingBinder
 import com.itangcent.idea.plugin.utils.SpringClassName
+import com.itangcent.idea.psi.PsiMethodResource
 import com.itangcent.idea.utils.ModuleHelper
 import com.itangcent.intellij.context.ActionContext
 import com.itangcent.intellij.jvm.AnnotationHelper
@@ -73,7 +74,7 @@ open class AbstractYapiApiExporter {
             return null
         }
 
-        val value = annotationHelper!!.findAttr(resource.asPsiClass(), SpringClassName.API_CLASS_GROUP)
+        val value = annotationHelper!!.findAttr((resource as PsiMethodResource).resourceClass(), SpringClassName.API_CLASS_GROUP)
         if (value != null && value != "group") {
             //get cart
             logger!!.info("从class文件上发现@ClassGroup注解啦")
@@ -150,12 +151,12 @@ open class AbstractYapiApiExporter {
      * 正式导出文档
      */
     fun exportDoc(doc: Doc): Boolean {
-        logger!!.info("[开始导出文档1]")
+//        logger!!.info("[开始导出文档1]")
         if (doc.resource == null) return false
-        logger.info("[开始导出文档2]")
+//        logger.info("[开始导出文档2]")
         //todo 获取类目信息
         val cartInfo = getCartForDoc(doc.resource!!) ?: return false
-        logger.info("[获取类目信息]" + cartInfo.cartName)
+        logger!!.info("[获取类目信息]" + cartInfo.cartName)
         return exportDoc(doc, cartInfo.privateToken!!, cartInfo.cartId!!)
     }
 

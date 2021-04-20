@@ -115,7 +115,7 @@ class YapiApiExporter : AbstractYapiApiExporter() {
             val modulePrivateToken = actionContext!!.callInSwingUI {
                 return@callInSwingUI Messages.showInputDialog(
                     project, "Input Private Token Of Module:$module",
-                    "Yapi Private Token", Messages.getInformationIcon()
+                    "Private Token", Messages.getInformationIcon()
                 )
             }
             return if (modulePrivateToken.isNullOrBlank()) {
@@ -132,14 +132,7 @@ class YapiApiExporter : AbstractYapiApiExporter() {
     override fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
         if (super.exportDoc(doc, privateToken, cartId)) {
             if (successExportedCarts.add(cartId)) {
-                logger!!.info(
-                    "${this.javaClass.simpleName}:Export to ${
-                        yapiApiHelper!!.getCartWeb(
-                            yapiApiHelper.getProjectIdByToken(privateToken)!!,
-                            cartId
-                        )
-                    } success"
-                )
+                logger!!.info("${this.javaClass.simpleName}:Export to API success")
             }
             return true
         }
