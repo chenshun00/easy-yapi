@@ -119,6 +119,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         contextSwitchListener?.switchTo(cls)
         actionContext!!.checkStatus()
         statusRecorder.newWork()
+        logger!!.info("${this.javaClass.simpleName}:2search api from:${cls.qualifiedName}")
+        logger!!.info("${this.javaClass.simpleName}:2search api from:${cls.qualifiedName}")
         try {
             //注意这里的when语法
             when {
@@ -564,13 +566,13 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                         //ignore @HttpServletRequest and @HttpServletResponse
                         continue
                     }
-
-                    parsedParams.add(
-                        param to psiClassHelper!!.getTypeObject(
-                            unboxType, param.psi(),
-                            jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
-                        )
+                    val typeObject = psiClassHelper!!.getTypeObject(
+                        unboxType, param.psi(),
+                        jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
                     )
+                    val x = param to typeObject
+
+                    parsedParams.add(x)
                 } finally {
                     ruleComputer.computer(ClassExportRuleKeys.PARAM_AFTER, param)
                 }

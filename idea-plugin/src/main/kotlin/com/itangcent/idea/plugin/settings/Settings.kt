@@ -62,7 +62,7 @@ class Settings {
         newSetting.pullNewestDataBefore = this.pullNewestDataBefore
         newSetting.methodDocEnable = this.methodDocEnable
         newSetting.formExpanded = this.formExpanded
-        newSetting.readGetter = this.readGetter
+        newSetting.readGetter = false
         newSetting.inferEnable = this.inferEnable
         newSetting.inferMaxDeep = this.inferMaxDeep
         newSetting.yapiServer = this.yapiServer
@@ -91,7 +91,6 @@ class Settings {
         if (wrapCollection != other.wrapCollection) return false
         if (autoMergeScript != other.autoMergeScript) return false
         if (formExpanded != other.formExpanded) return false
-        if (readGetter != other.readGetter) return false
         if (inferEnable != other.inferEnable) return false
         if (inferMaxDeep != other.inferMaxDeep) return false
         if (yapiServer != other.yapiServer) return false
@@ -116,7 +115,6 @@ class Settings {
         result = 31 * result + wrapCollection.hashCode()
         result = 31 * result + autoMergeScript.hashCode()
         result = 31 * result + formExpanded.hashCode()
-        result = 31 * result + readGetter.hashCode()
         result = 31 * result + inferEnable.hashCode()
         result = 31 * result + inferMaxDeep
         result = 31 * result + (yapiServer?.hashCode() ?: 0)
