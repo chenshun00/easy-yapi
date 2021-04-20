@@ -6,8 +6,10 @@ import com.intellij.psi.PsiMethod
 import com.itangcent.common.kit.headLine
 import com.itangcent.common.utils.append
 import com.itangcent.common.utils.notNullOrEmpty
+import com.itangcent.idea.plugin.utils.SpringClassName
 import com.itangcent.intellij.config.rule.RuleComputer
 import com.itangcent.intellij.config.rule.computer
+import com.itangcent.intellij.jvm.AnnotationHelper
 import com.itangcent.intellij.jvm.DocHelper
 import com.itangcent.intellij.jvm.element.ExplicitMethod
 
@@ -22,6 +24,9 @@ open class ApiHelper {
 
     @Inject
     protected val ruleComputer: RuleComputer? = null
+
+    @Inject
+    private val annotationHelper: AnnotationHelper? = null
 
     fun nameOfApi(psiMethod: PsiMethod): String {
 
@@ -68,15 +73,25 @@ open class ApiHelper {
         return name to attr
     }
 
-    fun nameAndAttrOfApi(explicitMethod: ExplicitMethod, nameHandle: (String) -> Unit,
-                         attrHandle: (String) -> Unit) {
-
+    /**
+     * 设置api的title
+     */
+    fun nameAndAttrOfApi(
+        explicitMethod: ExplicitMethod, nameHandle: (String) -> Unit,
+        attrHandle: (String) -> Unit
+    ) {
 
         var named = false
-        val nameByRule = ruleComputer!!.computer(ClassExportRuleKeys.API_NAME, explicitMethod)
-        if (nameByRule.notNullOrEmpty()) {
-            nameHandle(nameByRule!!)
+        val title = annotationHelper!!.findAttrAsString(explicitMethod.psi(), SpringClassName.API_ACTION, "title")
+        if (title != null && title.notNullOrEmpty() && title != "title") {
+            nameHandle(title)
             named = true
+        } else {
+            val nameByRule = ruleComputer!!.computer(ClassExportRuleKeys.API_NAME, explicitMethod)
+            if (nameByRule.notNullOrEmpty()) {
+                nameHandle(nameByRule!!)
+                named = true
+            }
         }
 
         var attrOfMethod = findAttrOfMethod(explicitMethod)
@@ -97,8 +112,10 @@ open class ApiHelper {
         }
     }
 
-    fun nameAndAttrOfApi(explicitMethod: PsiMethod, nameHandle: (String) -> Unit,
-                         attrHandle: (String) -> Unit) {
+    fun nameAndAttrOfApi(
+        explicitMethod: PsiMethod, nameHandle: (String) -> Unit,
+        attrHandle: (String) -> Unit
+    ) {
 
 
         var named = false

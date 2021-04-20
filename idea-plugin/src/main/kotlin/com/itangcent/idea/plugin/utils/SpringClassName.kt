@@ -19,8 +19,8 @@ class SpringClassName {
         const val MULTI_PART_FILE = "org.springframework.web.multipart.MultipartFile"
 
         //custom annotations
-        const val API_OFFLINE = "com.raycloud.yapi.api.Offline"
         const val API_ACTION = "com.raycloud.yapi.api.Action"
+        const val API_CLASS_GROUP = "com.raycloud.yapi.api.ClassGroup"
         const val API_ONLINE = "com.raycloud.yapi.api.Online"
         const val API_SESSION = "com.raycloud.yapi.api.Session"
 

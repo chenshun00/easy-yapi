@@ -4,7 +4,7 @@ import com.intellij.openapi.ui.Messages
 import com.intellij.util.containers.ContainerUtil
 import com.itangcent.common.model.Doc
 import com.itangcent.idea.plugin.api.export.Folder
-import java.util.HashMap
+import java.util.*
 import kotlin.collections.HashSet
 import kotlin.collections.set
 
@@ -24,8 +24,10 @@ class YapiApiDashBoardExporter : AbstractYapiApiExporter() {
         } else {
             tryInputTokenOfModule.add(module)
             val modulePrivateToken = actionContext!!.callInSwingUI {
-                return@callInSwingUI Messages.showInputDialog(project, "Input Private Token Of Module:$module",
-                        "Yapi Private Token", Messages.getInformationIcon())
+                return@callInSwingUI Messages.showInputDialog(
+                    project, "Input Private Token Of Module:$module",
+                    "Yapi Private Token", Messages.getInformationIcon()
+                )
             }
             return if (modulePrivateToken.isNullOrBlank()) {
                 null
@@ -62,7 +64,7 @@ class YapiApiDashBoardExporter : AbstractYapiApiExporter() {
     override fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
         if (super.exportDoc(doc, privateToken, cartId)) {
             if (successExportedCarts.add(cartId)) {
-                logger!!.info("${this.javaClass.simpleName}:Export to ${yapiApiHelper!!.getCartWeb(yapiApiHelper.getProjectIdByToken(privateToken)!!, cartId)} success")
+                logger!!.info("${this.javaClass.simpleName}:Export to success")
             }
             return true
         }

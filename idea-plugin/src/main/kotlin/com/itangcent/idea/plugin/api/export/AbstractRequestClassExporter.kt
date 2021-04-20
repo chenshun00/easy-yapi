@@ -216,11 +216,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
      * 处理方法,得先看下这部分完成了什么问题
      */
     protected open fun processMethod(method: ExplicitMethod, kv: KV<String, Any?>, request: Request) {
-        apiHelper!!.nameAndAttrOfApi(method, {
-            requestHelper!!.setName(request, it)
-        }, {
-            requestHelper!!.appendDesc(request, it)
-        })
+        apiHelper!!.nameAndAttrOfApi(method, { requestHelper!!.setName(request, it) }, { requestHelper!!.appendDesc(request, it) })
 
         //computer content-type.
         ruleComputer!!.computer(ClassExportRuleKeys.METHOD_CONTENT_TYPE, method)
