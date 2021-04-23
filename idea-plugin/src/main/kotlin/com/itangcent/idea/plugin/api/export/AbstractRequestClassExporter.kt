@@ -475,18 +475,18 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
     }
 
     private fun foreachMethod(cls: PsiClass, handle: (ExplicitMethod) -> Unit) {
-        logger!!.info("[数量: ${duckTypeHelper!!.explicit(cls).methods().size}]")
+//        logger!!.info("[数量: ${duckTypeHelper!!.explicit(cls).methods().size}]")
         duckTypeHelper!!.explicit(cls)
             .methods()
             .stream()
 //            //不是object方法
-//            .filter { !jvmClassHelper!!.isBasicMethod(it.psi().name) }
+            .filter { !jvmClassHelper!!.isBasicMethod(it.psi().name) }
 //            //不是static方法
-//            .filter { !it.psi().hasModifierProperty("static") }
+            .filter { !it.psi().hasModifierProperty("static") }
 //            //不是构造器方法
-//            .filter { !it.psi().isConstructor }
+            .filter { !it.psi().isConstructor }
 //            //跳过不生成的
-//            .filter { !shouldIgnore(it) }
+            .filter { !shouldIgnore(it) }
 //            .peek {
 //                logger!!.info("[开始处理方法前:${it.name()}]")
 //            }
