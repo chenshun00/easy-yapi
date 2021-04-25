@@ -50,6 +50,10 @@ open class DefaultRequestHelper : RequestHelper {
         request.action = action
     }
 
+    override fun setDomain(request: Request, domain: String) {
+        request.domain = domain
+    }
+
     override fun setModelAsBody(request: Request, model: Any) {
         request.body = model
     }

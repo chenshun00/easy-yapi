@@ -20,6 +20,8 @@ interface RequestHelper {
 
     fun setAction(request: Request, action: String)
 
+    fun setDomain(request: Request, domain: String)
+
     /**
      * addAsJsonBody if content-type is json
      * otherwise addAsForm

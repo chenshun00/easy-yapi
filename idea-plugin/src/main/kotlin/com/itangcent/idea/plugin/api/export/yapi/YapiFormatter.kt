@@ -289,6 +289,7 @@ open class YapiFormatter {
         item["req_online"] = request.online
         item["session"] = request.session
         item["action"] = request.action
+        item["domain"] = request.domain
         item["edit_uid"] = 0
         item["status"] = request.getStatus()
         item["type"] = "static"

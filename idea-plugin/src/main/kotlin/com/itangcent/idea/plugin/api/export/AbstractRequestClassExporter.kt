@@ -534,6 +534,10 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         val action = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_ACTION)
             ?: throw RuntimeException("请在方法${method.name()}上添加${SpringClassName.API_ACTION}注解,申明Action")
         requestHelper.setAction(request, action)
+
+        val domain = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_CLASS_GROUP, "domain") ?: "api.raycloud.com"
+        requestHelper.setDomain(request, domain)
+
         //参数不为空
         if (params.isNotEmpty()) {
 
