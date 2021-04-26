@@ -124,7 +124,7 @@ open class AbstractYapiApiExporter {
             throw RuntimeException("获取API类目失败,请参考使用文档#注释部分后重试")
         }
 
-        val cartId: String?
+        var cartId: String?
 
         //try find existed cart.
         //根据名字尝试找到已经存在的类目ID
@@ -133,6 +133,14 @@ open class AbstractYapiApiExporter {
         } catch (e: Exception) {
             logger!!.traceError("error to find cart [$name]", e)
             return null
+        }
+
+        try {
+            if (cartId == null) {
+                cartId = yapiApiHelper.findCat(privateToken, "公共");
+            }
+        } catch (e: Exception) {
+
         }
 
         //create new cart.
@@ -169,7 +177,7 @@ open class AbstractYapiApiExporter {
             apiInfo["token"] = privateToken
             apiInfo["catid"] = cartId
             ret = ret or yapiApiHelper!!.saveApiInfoToApiDocPlatform(apiInfo)
-            logger.info("API 上传成功，访问地址====> http://api.raycloud.com/#/?menuIdx=0&action=${apiInfo["action"]} ")
+            logger.info("API上传成功，访问地址====> http://api.raycloud.com/#/?menuIdx=0&action=${apiInfo["action"]} ")
         }
         return ret
     }
