@@ -15,7 +15,6 @@ import com.itangcent.idea.psi.PsiMethodResource
 import com.itangcent.idea.utils.ModuleHelper
 import com.itangcent.intellij.context.ActionContext
 import com.itangcent.intellij.jvm.AnnotationHelper
-import com.itangcent.intellij.jvm.asPsiClass
 import com.itangcent.intellij.logger.Logger
 import java.util.*
 
@@ -70,17 +69,17 @@ open class AbstractYapiApiExporter {
         //
         val privateToken = getTokenOfModule(module)
         if (privateToken == null) {
-            logger!!.info("No token be found for $module")
+//            logger!!.info("No token be found for $module")
             return null
         }
 
         val value = annotationHelper!!.findAttr((resource as PsiMethodResource).resourceClass(), SpringClassName.API_CLASS_GROUP)
         if (value != null && value != "group") {
             //get cart
-            logger!!.info("从class文件上发现@ClassGroup注解啦")
+//            logger!!.info("从class文件上发现@ClassGroup注解啦")
             return getCatForDocByAnnotation(value as String, privateToken);
         } else {
-            logger!!.info("从class文件上未发现@ClassGroup注解，开始读取注释作为API类目")
+//            logger!!.info("从class文件上未发现@ClassGroup注解，开始读取注释作为API类目")
             val folder = formatFolderHelper!!.resolveFolder(resource)
             return getCartForDoc(folder, privateToken)
         }
@@ -88,7 +87,7 @@ open class AbstractYapiApiExporter {
     }
 
     protected fun getCatForDocByAnnotation(name: String, privateToken: String): CartInfo? {
-        val cartId: String?
+        var cartId: String?
 
         //try find existed cart.
         //根据名字尝试找到已经存在的类目ID
@@ -98,16 +97,18 @@ open class AbstractYapiApiExporter {
             logger!!.traceError("error to find cart [$name]", e)
             return null
         }
+        try {
+            if (cartId == null) {
+                cartId = yapiApiHelper.findCat(privateToken, "公共");
+            }
+        } catch (e: Exception) {
+
+        }
         //create new cart.
         if (cartId == null) {
-            throw RuntimeException("根据【$name】获取API类目失败,请参考使用文档#注释部分后重试")
+            throw RuntimeException("获取API分类失败")
         }
-        val cartInfo = CartInfo()
-        cartInfo.cartId = cartId
-        cartInfo.cartName = name
-        cartInfo.privateToken = privateToken
-
-        return cartInfo
+        return CartInfo(cartId, name, privateToken)
     }
 
     /**
@@ -151,12 +152,8 @@ open class AbstractYapiApiExporter {
      * 正式导出文档
      */
     fun exportDoc(doc: Doc): Boolean {
-//        logger!!.info("[开始导出文档1]")
         if (doc.resource == null) return false
-//        logger.info("[开始导出文档2]")
-        //todo 获取类目信息
         val cartInfo = getCartForDoc(doc.resource!!) ?: return false
-        logger!!.info("[获取类目信息]" + cartInfo.cartName)
         return exportDoc(doc, cartInfo.privateToken!!, cartInfo.cartId!!)
     }
 
@@ -172,6 +169,7 @@ open class AbstractYapiApiExporter {
             apiInfo["token"] = privateToken
             apiInfo["catid"] = cartId
             ret = ret or yapiApiHelper!!.saveApiInfoToApiDocPlatform(apiInfo)
+            logger.info("API 上传成功，访问地址====> http://api.raycloud.com/#/?menuIdx=0&action=${apiInfo["action"]} ")
         }
         return ret
     }

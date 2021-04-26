@@ -5,7 +5,6 @@ import com.google.inject.Singleton
 import com.itangcent.common.logger.traceError
 import com.itangcent.common.utils.GsonUtils
 import com.itangcent.http.contentType
-import com.itangcent.intellij.extend.asJsonElement
 import com.itangcent.intellij.extend.asList
 import com.itangcent.intellij.extend.sub
 import org.apache.commons.lang3.StringUtils
@@ -68,30 +67,6 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
             logger!!.traceError("error to find cat. projectId:$projectId, info: ${projectInfo?.toString()}", e)
         }
         return null
-    }
-
-    override fun saveApiInfo(apiInfo: HashMap<String, Any?>): Pair<Boolean, String?> {
-        try {
-//            logger!!.info("api info:${GsonUtils.toJson(apiInfo)}")
-            val returnValue = httpClientProvide!!.getHttpClient()
-                .post(server + SAVE_API)
-                .contentType(ContentType.APPLICATION_JSON)
-                .body(apiInfo)
-                .call()
-                .string()
-            val errMsg = findErrorMsg(returnValue)
-            if (StringUtils.isNotBlank(errMsg)) {
-                logger!!.info("Post failed:$errMsg\tapi info:${GsonUtils.toJson(apiInfo)}")
-                return Pair(false, "null")
-            }
-            val resObj = returnValue?.asJsonElement()
-            val asString = resObj.sub("data")?.asJsonArray?.firstOrNull()
-                .sub("_id")?.asString
-            return Pair(true, asString)
-        } catch (e: Throwable) {
-            logger!!.error("Post failed:" + ExceptionUtils.getStackTrace(e))
-            return Pair(false, "null")
-        }
     }
 
     override fun saveApiInfoToApiDocPlatform(apiInfo: HashMap<String, Any?>): Boolean {

@@ -98,9 +98,6 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
         return projectId
     }
 
-    /**
-     * todo 这个接口算是比较core的了,根据token和可选的projectId获取项目信息
-     */
     override fun getProjectInfo(token: String, projectId: String?): JsonElement? {
         if (projectId != null) {
             val cachedProjectInfo = cacheLock.readLock().withLock { projectInfoCache[projectId] }

@@ -131,9 +131,7 @@ class YapiApiExporter : AbstractYapiApiExporter() {
 
     override fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
         if (super.exportDoc(doc, privateToken, cartId)) {
-            if (successExportedCarts.add(cartId)) {
-                logger!!.info("${this.javaClass.simpleName}:Export to API success")
-            }
+            successExportedCarts.add(cartId)
             return true
         }
         return false
