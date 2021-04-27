@@ -62,26 +62,15 @@ open class AbstractYapiApiExporter {
     }
 
     protected open fun getCartForDoc(resource: Any): CartInfo? {
-
-        //get token
-        //resource 代表了一个module，🐂 🍺
         val module = actionContext!!.callInReadUI { moduleHelper!!.findModule(resource) } ?: return null
-        //
-        val privateToken = getTokenOfModule(module)
-        if (privateToken == null) {
-//            logger!!.info("No token be found for $module")
-            return null
-        }
+        val privateToken = getTokenOfModule(module) ?: return null
 
         val value = annotationHelper!!.findAttr((resource as PsiMethodResource).resourceClass(), SpringClassName.API_CLASS_GROUP)
-        if (value != null && value != "group") {
-            //get cart
-//            logger!!.info("从class文件上发现@ClassGroup注解啦")
-            return getCatForDocByAnnotation(value as String, privateToken);
+        return if (value != null && value != "group") {
+            getCatForDocByAnnotation(value as String, privateToken);
         } else {
-//            logger!!.info("从class文件上未发现@ClassGroup注解，开始读取注释作为API类目")
             val folder = formatFolderHelper!!.resolveFolder(resource)
-            return getCartForDoc(folder, privateToken)
+            getCartForDoc(folder, privateToken)
         }
 
     }
@@ -108,7 +97,7 @@ open class AbstractYapiApiExporter {
         if (cartId == null) {
             throw RuntimeException("获取API分类失败")
         }
-        return CartInfo(cartId, name, privateToken)
+        return CartInfo(cartId, name, privateToken, yapiApiHelper.getProjectIdByToken(privateToken))
     }
 
     /**
@@ -148,12 +137,7 @@ open class AbstractYapiApiExporter {
             throw RuntimeException("根据【$name】获取API类目失败,请参考使用文档#注释部分后重试")
         }
 
-        val cartInfo = CartInfo()
-        cartInfo.cartId = cartId
-        cartInfo.cartName = name
-        cartInfo.privateToken = privateToken
-
-        return cartInfo
+        return CartInfo(cartId, name, privateToken, yapiApiHelper.getProjectIdByToken(privateToken))
     }
 
     /**
@@ -162,22 +146,22 @@ open class AbstractYapiApiExporter {
     fun exportDoc(doc: Doc): Boolean {
         if (doc.resource == null) return false
         val cartInfo = getCartForDoc(doc.resource!!) ?: return false
-        return exportDoc(doc, cartInfo.privateToken!!, cartInfo.cartId!!)
+        return exportDoc(doc, cartInfo)
     }
 
     /**
      * 获取Java文件中全部的API信息,然后遍历这个数据导出
      */
-    open fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
+    open fun exportDoc(doc: Doc, cartInfo: CartInfo): Boolean {
         val apiInfos = yapiFormatter!!.doc2Item(doc)
         logger!!.info("api info:${GsonUtils.toJson(apiInfos)}")
         check(apiInfos)
         var ret = false
         apiInfos.forEach { apiInfo ->
-            apiInfo["token"] = privateToken
-            apiInfo["catid"] = cartId
+            apiInfo["token"] = cartInfo.privateToken
+            apiInfo["catid"] = cartInfo.cartId
             ret = ret or yapiApiHelper!!.saveApiInfoToApiDocPlatform(apiInfo)
-            logger.info("API上传成功，访问地址====> http://api.raycloud.com/#/?menuIdx=0&action=${apiInfo["action"]} ")
+            logger.info("API上传成功，访问地址====> http://api.raycloud.com/#/?menuIdx=${cartInfo.projectId}&action=${apiInfo["action"]} ")
         }
         return ret
     }
