@@ -58,12 +58,12 @@ class YapiApiDashBoardExporter : AbstractYapiApiExporter() {
     fun exportDoc(doc: Doc, privateToken: String): Boolean {
         if (doc.resource == null) return false
         val cartInfo = getCartForDoc(doc.resource!!) ?: return false
-        return exportDoc(doc, privateToken, cartInfo.cartId!!)
+        return exportDoc(doc, cartInfo)
     }
 
-    override fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
-        if (super.exportDoc(doc, privateToken, cartId)) {
-            if (successExportedCarts.add(cartId)) {
+    override fun exportDoc(doc: Doc, cartInfo: CartInfo): Boolean {
+        if (super.exportDoc(doc, cartInfo)) {
+            if (successExportedCarts.add(cartInfo.cartId.toString())) {
                 logger!!.info("${this.javaClass.simpleName}:Export to success")
             }
             return true

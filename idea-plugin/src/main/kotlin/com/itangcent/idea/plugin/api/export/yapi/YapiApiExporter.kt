@@ -129,9 +129,9 @@ class YapiApiExporter : AbstractYapiApiExporter() {
 
     private var successExportedCarts: MutableSet<String> = ContainerUtil.newConcurrentSet<String>()
 
-    override fun exportDoc(doc: Doc, privateToken: String, cartId: String): Boolean {
-        if (super.exportDoc(doc, privateToken, cartId)) {
-            successExportedCarts.add(cartId)
+    override fun exportDoc(doc: Doc, cartInfo: CartInfo): Boolean {
+        if (super.exportDoc(doc, cartInfo)) {
+            successExportedCarts.add(cartInfo.cartId.toString())
             return true
         }
         return false

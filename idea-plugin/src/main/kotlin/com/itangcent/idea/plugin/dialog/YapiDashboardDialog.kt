@@ -1190,7 +1190,7 @@ class YapiDashboardDialog : JDialog() {
         docHandle = if (cartId.isNullOrBlank()) {
             { doc -> yapiApiDashBoardExporter!!.exportDoc(doc, privateToken) }
         } else {
-            { doc -> yapiApiDashBoardExporter!!.exportDoc(doc, privateToken, cartId) }
+            { doc -> yapiApiDashBoardExporter!!.exportDoc(doc, privateToken) }
         }
 
         export(fromProjectData, docHandle)
