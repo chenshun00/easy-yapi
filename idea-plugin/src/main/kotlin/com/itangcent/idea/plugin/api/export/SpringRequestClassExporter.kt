@@ -464,6 +464,7 @@ open class SpringRequestClassExporter : AbstractRequestClassExporter() {
 
     protected fun isRequestBody(parameter: PsiParameter): Boolean {
         return annotationHelper!!.hasAnn(parameter, SpringClassName.REQUEST_BODY_ANNOTATION)
+                || annotationHelper.hasAnn(parameter, SpringClassName.TAOBAO_MINI_BODY_ANNOTATION)
     }
 
     protected fun isModelAttr(parameter: PsiParameter): Boolean {
