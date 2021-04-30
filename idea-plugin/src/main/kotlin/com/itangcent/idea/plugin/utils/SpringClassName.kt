@@ -12,7 +12,8 @@ class SpringClassName {
                 "org.springframework.stereotype.Controller",
                 "org.springframework.web.bind.annotation.RestController",
                 "com.raycloud.yapi.api.Path",
-                "com.raycloud.qnee.sdk.api.internal.annotation.ServiceMethodBean"
+                "com.raycloud.qnee.sdk.api.internal.annotation.ServiceMethodBean",
+                "com.taobao.miniapp.function.anotation.RequestHandler"
             )
 
         //file
@@ -50,7 +51,8 @@ class SpringClassName {
             POST_MAPPING,
             PUT_MAPPING,
             ROUTER_MAPPING,
-            PATH_MAPPING
+            PATH_MAPPING,
+            "com.taobao.miniapp.function.anotation.RequestHandler"
         )
 
         const val REQUEST_HEADER_DEFAULT_NONE = "\n\t\t\n\t\t\n\uE000\uE001\uE002\n\t\t\t\t\n"
