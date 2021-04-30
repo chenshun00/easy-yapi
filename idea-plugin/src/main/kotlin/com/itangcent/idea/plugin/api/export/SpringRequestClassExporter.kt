@@ -432,6 +432,7 @@ open class SpringRequestClassExporter : AbstractRequestClassExporter() {
                         else -> method
                     }
                 }
+                requestMappingAnn.second == SpringClassName.TAOBAO_MAPPING -> return HttpMethod.POST
                 requestMappingAnn.second == SpringClassName.GET_MAPPING -> return HttpMethod.GET
                 requestMappingAnn.second == SpringClassName.POST_MAPPING -> return HttpMethod.POST
                 requestMappingAnn.second == SpringClassName.DELETE_MAPPING -> return HttpMethod.DELETE

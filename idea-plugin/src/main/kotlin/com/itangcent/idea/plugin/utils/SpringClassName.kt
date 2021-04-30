@@ -42,6 +42,7 @@ class SpringClassName {
         const val PATCH_MAPPING = "org.springframework.web.bind.annotation.PatchMapping"
         const val ROUTER_MAPPING = "com.raycloud.yapi.api.Router"
         const val PATH_MAPPING = "com.raycloud.yapi.api.Path"
+        const val TAOBAO_MAPPING = "com.taobao.miniapp.function.anotation.RequestHandler"
 
         val SPRING_REQUEST_MAPPING_ANNOTATIONS: Set<String> = setOf(
             REQUEST_MAPPING_ANNOTATION,
@@ -52,7 +53,7 @@ class SpringClassName {
             PUT_MAPPING,
             ROUTER_MAPPING,
             PATH_MAPPING,
-            "com.taobao.miniapp.function.anotation.RequestHandler"
+            TAOBAO_MAPPING
         )
 
         const val REQUEST_HEADER_DEFAULT_NONE = "\n\t\t\n\t\t\n\uE000\uE001\uE002\n\t\t\t\t\n"
