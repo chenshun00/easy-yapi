@@ -72,7 +72,7 @@ open class DefaultYapiApiHelper : AbstractYapiApiHelper(), YapiApiHelper {
     override fun saveApiInfoToApiDocPlatform(apiInfo: HashMap<String, Any?>): Boolean {
         try {
             val returnValue = httpClientProvide!!.getHttpClient()
-                .post("http://api.raycloud.com/api/interface/save")
+                .post("http://api-inner.raycloud.com/api/interface/save")
                 .contentType(ContentType.APPLICATION_JSON)
                 .body(apiInfo)
                 .call()

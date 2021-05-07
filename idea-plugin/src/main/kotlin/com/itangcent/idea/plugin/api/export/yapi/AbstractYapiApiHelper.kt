@@ -40,7 +40,7 @@ abstract class AbstractYapiApiHelper : YapiApiHelper {
     @Volatile
     var server = "http://yapi.raycloud.com"
 
-    private var api_server = "http://api.raycloud.com"
+    private var api_server = "http://api-inner.raycloud.com"
 
     private var projectIdCache: HashMap<String, String> = HashMap()//token->id
 

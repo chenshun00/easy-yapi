@@ -161,7 +161,7 @@ open class AbstractYapiApiExporter {
             apiInfo["token"] = cartInfo.privateToken
             apiInfo["catid"] = cartInfo.cartId
             ret = ret or yapiApiHelper!!.saveApiInfoToApiDocPlatform(apiInfo)
-            logger.info("API上传成功，访问地址====> http://api.raycloud.com/#/?menuIdx=${cartInfo.projectId}&action=${apiInfo["action"]} ")
+            logger.info("API上传成功，访问地址====> http://api-inner.raycloud.com/#/?menuIdx=${cartInfo.projectId}&action=${apiInfo["action"]} ")
         }
         return ret
     }

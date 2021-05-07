@@ -33,7 +33,7 @@ open class Request : Doc() {
     var session: Boolean = false
     var action: String? = null
 
-    var domain: String? = "api.raycloud.com"
+    var domain: String? = "api-inner.raycloud.com"
 
     var formParams: MutableList<FormParam>? = null
 
