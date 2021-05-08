@@ -74,7 +74,6 @@ class YapiApiExporter : AbstractYapiApiExporter() {
                 if (classExporter is Worker) {
                     classExporter.waitCompleted()
                 }
-                logger.info("Apis exported completed")
             }
             //⚠️ 到这里为止都是定义了一些lambda表达式的使用，但是真实的调用尚未发起
             //而这里就是真实调用的发起点

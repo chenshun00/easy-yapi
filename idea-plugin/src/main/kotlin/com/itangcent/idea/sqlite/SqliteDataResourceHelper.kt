@@ -25,7 +25,7 @@ class SqliteDataResourceHelper {
             sqLiteConfig.setCacheSize(1024 * 8)
             sqLiteConfig.setTempStore(SQLiteConfig.TempStore.MEMORY)
             sqLiteConfig.setPageSize(1024 * 8)
-            sqLiteConfig.setBusyTimeout("60000")
+            sqLiteConfig.setBusyTimeout(60000)
             val sd = SQLiteConnectionPoolDataSource(sqLiteConfig)
             sd.url = "jdbc:sqlite:$fileName"
             sd
