@@ -41,10 +41,10 @@ class SpringClassName {
         const val DELETE_MAPPING = "org.springframework.web.bind.annotation.DeleteMapping"
         const val PATCH_MAPPING = "org.springframework.web.bind.annotation.PatchMapping"
         const val ROUTER_MAPPING = "com.raycloud.yapi.api.Router"
-        const val ServiceMethod_MAPPING = "com.raycloud.yapi.api.ServiceMethod"
         const val PATH_MAPPING = "com.raycloud.yapi.api.Path"
-        const val SERVICE_METHOD_MAPPING = "com.raycloud.qnee.sdk.api.internal.annotation.ServiceMethodBean"
         const val TAOBAO_MAPPING = "com.taobao.miniapp.function.anotation.RequestHandler"
+        const val ServiceMethod_MAPPING = "com.raycloud.qnee.sdk.api.internal.annotation.ServiceMethod"
+        const val SERVICE_METHOD_MAPPING = "com.raycloud.qnee.sdk.api.internal.annotation.ServiceMethodBean"
 
         val SPRING_REQUEST_MAPPING_ANNOTATIONS: Set<String> = setOf(
             REQUEST_MAPPING_ANNOTATION,
