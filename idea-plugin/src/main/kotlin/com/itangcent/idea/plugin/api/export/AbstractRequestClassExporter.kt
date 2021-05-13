@@ -518,22 +518,20 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
             requestHelper!!.setReq(request, findAttr);
         }
 
-        //处理API是线上还是线下的情况
-        val isOnline = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_ONLINE)
-        var onlineValue = "offline"
-        if (isOnline != null) {
-            onlineValue = "online"
-        }
-        requestHelper.setOnlineOrNot(request, onlineValue);
         val session = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_SESSION)
         if (session != null) {
-            requestHelper.setSession(request, true);
+            requestHelper.setSession(request, true)
         } else {
-            requestHelper.setSession(request, false);
+            requestHelper.setSession(request, false)
         }
         val action = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_ACTION)
             ?: throw RuntimeException("请在方法${method.name()}上添加${SpringClassName.API_ACTION}注解,申明Action")
         requestHelper.setAction(request, action)
+
+        val actionSession = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_ACTION, "session")
+        if (actionSession != null) {
+            requestHelper.setSession(request, "true" === actionSession)
+        }
 
         val domain = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_CLASS_GROUP, "domain") ?: "api-inner.raycloud.com"
         requestHelper.setDomain(request, domain)
