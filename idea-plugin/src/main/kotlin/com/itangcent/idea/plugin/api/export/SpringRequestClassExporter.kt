@@ -415,6 +415,7 @@ open class SpringRequestClassExporter : AbstractRequestClassExporter() {
                     }
                 }
                 requestMappingAnn.second == SpringClassName.ServiceMethod_MAPPING -> return HttpMethod.POST
+                requestMappingAnn.second == SpringClassName.SERVICE_METHOD_MAPPING -> return HttpMethod.POST
                 requestMappingAnn.second == SpringClassName.ROUTER_MAPPING -> {
                     var method = requestMappingAnn.first["method"].tinyString() ?: return HttpMethod.NO_METHOD
                     if (method.contains(",")) {

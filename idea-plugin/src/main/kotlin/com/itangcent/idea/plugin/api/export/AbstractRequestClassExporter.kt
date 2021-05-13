@@ -528,9 +528,14 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
             ?: throw RuntimeException("请在方法${method.name()}上添加${SpringClassName.API_ACTION}注解,申明Action")
         requestHelper.setAction(request, action)
 
+        val apiClassGroup = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_CLASS_GROUP, "session")
+        if (apiClassGroup != null) {
+            requestHelper.setSession(request, apiClassGroup == "true")
+        }
+
         val actionSession = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_ACTION, "session")
         if (actionSession != null) {
-            requestHelper.setSession(request, "true" === actionSession)
+            requestHelper.setSession(request, actionSession == "true")
         }
 
         val domain = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_CLASS_GROUP, "domain") ?: "api-inner.raycloud.com"

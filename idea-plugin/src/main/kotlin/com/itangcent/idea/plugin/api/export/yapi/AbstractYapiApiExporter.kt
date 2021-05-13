@@ -66,7 +66,7 @@ open class AbstractYapiApiExporter {
         val privateToken = getTokenOfModule(module) ?: return null
 
         val value = annotationHelper!!.findAttr((resource as PsiMethodResource).resourceClass(), SpringClassName.API_CLASS_GROUP)
-        val group = annotationHelper.findAttr(resource.resourceClass(), SpringClassName.API_ACTION, "group")
+        val group = annotationHelper.findAttr(resource.resource(), SpringClassName.API_ACTION, "group")
         return if (value != null && value != "group") {
             if (group != null && group != "group") {
                 getCatForDocByAnnotation(group as String, privateToken);
