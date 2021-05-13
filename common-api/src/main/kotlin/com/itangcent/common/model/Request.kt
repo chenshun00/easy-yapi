@@ -28,7 +28,7 @@ open class Request : Doc() {
 
     var req: String? = null
 
-    var online: String? = null
+    var online: String? = "offline"
 
     var session: Boolean = false
     var action: String? = null
