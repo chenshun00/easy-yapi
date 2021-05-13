@@ -22,7 +22,6 @@ class SpringClassName {
         //custom annotations
         const val API_ACTION = "com.raycloud.yapi.api.Action"
         const val API_CLASS_GROUP = "com.raycloud.yapi.api.ClassGroup"
-        const val API_ONLINE = "com.raycloud.yapi.api.Online"
         const val API_SESSION = "com.raycloud.yapi.api.Session"
 
         //annotations
@@ -42,7 +41,9 @@ class SpringClassName {
         const val DELETE_MAPPING = "org.springframework.web.bind.annotation.DeleteMapping"
         const val PATCH_MAPPING = "org.springframework.web.bind.annotation.PatchMapping"
         const val ROUTER_MAPPING = "com.raycloud.yapi.api.Router"
+        const val ServiceMethod_MAPPING = "com.raycloud.yapi.api.ServiceMethod"
         const val PATH_MAPPING = "com.raycloud.yapi.api.Path"
+        const val SERVICE_METHOD_MAPPING = "com.raycloud.qnee.sdk.api.internal.annotation.ServiceMethodBean"
         const val TAOBAO_MAPPING = "com.taobao.miniapp.function.anotation.RequestHandler"
 
         val SPRING_REQUEST_MAPPING_ANNOTATIONS: Set<String> = setOf(
@@ -54,7 +55,9 @@ class SpringClassName {
             PUT_MAPPING,
             ROUTER_MAPPING,
             PATH_MAPPING,
-            TAOBAO_MAPPING
+            TAOBAO_MAPPING,
+            SERVICE_METHOD_MAPPING,
+            ServiceMethod_MAPPING
         )
 
         const val REQUEST_HEADER_DEFAULT_NONE = "\n\t\t\n\t\t\n\uE000\uE001\uE002\n\t\t\t\t\n"
