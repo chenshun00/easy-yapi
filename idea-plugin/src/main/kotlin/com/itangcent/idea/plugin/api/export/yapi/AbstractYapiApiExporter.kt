@@ -66,11 +66,20 @@ open class AbstractYapiApiExporter {
         val privateToken = getTokenOfModule(module) ?: return null
 
         val value = annotationHelper!!.findAttr((resource as PsiMethodResource).resourceClass(), SpringClassName.API_CLASS_GROUP)
+        val group = annotationHelper.findAttr(resource.resourceClass(), SpringClassName.API_ACTION, "group")
         return if (value != null && value != "group") {
-            getCatForDocByAnnotation(value as String, privateToken);
+            if (group != null && group != "group") {
+                getCatForDocByAnnotation(group as String, privateToken);
+            } else {
+                getCatForDocByAnnotation(value as String, privateToken);
+            }
         } else {
-            val folder = formatFolderHelper!!.resolveFolder(resource)
-            getCartForDoc(folder, privateToken)
+            if (group != null && group != "group") {
+                getCatForDocByAnnotation(group as String, privateToken);
+            } else {
+                val folder = formatFolderHelper!!.resolveFolder(resource)
+                getCartForDoc(folder, privateToken)
+            }
         }
 
     }

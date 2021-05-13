@@ -29,6 +29,9 @@ open class DefaultRequestHelper : RequestHelper {
      */
     override fun setPath(request: Request, path: URL) {
         request.path = path
+        if (request.path === null) {
+            request.path = URL.nil()
+        }
     }
 
     /**
