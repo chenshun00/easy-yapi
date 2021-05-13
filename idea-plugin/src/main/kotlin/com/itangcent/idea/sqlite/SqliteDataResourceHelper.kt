@@ -25,7 +25,7 @@ class SqliteDataResourceHelper {
             sqLiteConfig.setCacheSize(1024 * 8)
             sqLiteConfig.setTempStore(SQLiteConfig.TempStore.MEMORY)
             sqLiteConfig.setPageSize(1024 * 8)
-            sqLiteConfig.setBusyTimeout(60000)
+            sqLiteConfig.setBusyTimeout("60000")
             val sd = SQLiteConnectionPoolDataSource(sqLiteConfig)
             sd.url = "jdbc:sqlite:$fileName"
             sd
@@ -67,9 +67,11 @@ class SqliteDataResourceHelper {
         fun get(name: ByteArray): ByteArray? {
             return try {
                 return sqlLiteDataSource
-                        .execute<String?>("SELECT * FROM $cacheName WHERE HASH = '${name.contentHashCode()}'" +
-                                " AND NAME = '${name.encodeBase64()}' LIMIT 1") { resultSet -> resultSet.getString("VALUE") }
-                        ?.decodeBase64()
+                    .execute<String?>(
+                        "SELECT * FROM $cacheName WHERE HASH = '${name.contentHashCode()}'" +
+                                " AND NAME = '${name.encodeBase64()}' LIMIT 1"
+                    ) { resultSet -> resultSet.getString("VALUE") }
+                    ?.decodeBase64()
             } catch (e: Exception) {
                 null
             }
