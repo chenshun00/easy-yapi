@@ -564,7 +564,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                         continue
                     }
                     val typeObject = psiClassHelper!!.getTypeObject(
-                        unboxType, param.psi(),
+                        paramType, param.psi(),
                         jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
                     )
                     val x = param to typeObject
