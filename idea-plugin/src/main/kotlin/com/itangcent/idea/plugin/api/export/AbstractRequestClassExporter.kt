@@ -127,7 +127,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                 !hasApi(cls) -> return false
                 //是否忽略API (Ignore)
                 shouldIgnore(cls) -> {
-                    logger!!.info("${this.javaClass.simpleName}:ignore class:" + cls.qualifiedName)
+                    logger.info("${this.javaClass.simpleName}:ignore class:" + cls.qualifiedName)
                     return true
                 }
                 else -> {
@@ -135,10 +135,10 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                     //处理class文件,主要是获取path和method
                     processClass(cls, kv)
                     //遍历处理文件中的method了
-                    foreachMethod(cls) { explicitMethod ->
+                    this.foreachMethod(cls) { explicitMethod ->
                         val method = explicitMethod.psi()
                         //被Spring的注解标记
-                        if (isApi(method) && methodFilter?.checkMethod(method) != false) {
+                        if (isApi(method)) {
                             try {
                                 //kv.put(method.)
                                 exportMethodApi(cls, explicitMethod, kv, docHandle)
@@ -150,7 +150,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                 }
             }
         } catch (e: Exception) {
-            logger!!.traceError("error to export api from class:" + cls.name, e)
+            logger.traceError("error to export api from class:" + cls.name, e)
         } finally {
             statusRecorder.endWork()
         }
@@ -483,6 +483,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
             .filter { !jvmClassHelper!!.isBasicMethod(it.psi().name) }
 //            //不是static方法
             .filter { !it.psi().hasModifierProperty("static") }
+            .filter { !it.psi().hasModifierProperty("private") }
+            .filter { !it.psi().hasModifierProperty("protected") }
 //            //不是构造器方法
             .filter { !it.psi().isConstructor }
 //            //跳过不生成的

@@ -47,7 +47,7 @@ open class SpringRequestClassExporter : AbstractRequestClassExporter() {
     }
 
     override fun isApi(psiMethod: PsiMethod): Boolean {
-        return SpringClassName.SPRING_REQUEST_MAPPING_ANNOTATIONS.any {
+        return SpringClassName.ACTION_MAPPING.any {
             annotationHelper!!.hasAnn(psiMethod, it)
         }
     }

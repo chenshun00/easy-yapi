@@ -60,6 +60,10 @@ class SpringClassName {
             ServiceMethod_MAPPING
         )
 
+        val ACTION_MAPPING: Set<String> = setOf(
+            API_ACTION
+        )
+
         const val REQUEST_HEADER_DEFAULT_NONE = "\n\t\t\n\t\t\n\uE000\uE001\uE002\n\t\t\t\t\n"
 
         const val ESCAPE_REQUEST_HEADER_DEFAULT_NONE = "\\n\\t\\t\\n\\t\\t\\n\\uE000\\uE001\\uE002\\n\\t\\t\\t\\t\\n"
