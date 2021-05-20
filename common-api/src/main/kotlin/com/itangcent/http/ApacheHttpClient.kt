@@ -18,6 +18,7 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClients
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
 import org.apache.http.impl.cookie.BasicClientCookie
 import org.apache.http.impl.cookie.BasicClientCookie2
 import org.apache.http.message.BasicNameValuePair
@@ -40,14 +41,22 @@ open class ApacheHttpClient : HttpClient {
         apacheCookieStore = ApacheCookieStore(basicCookieStore)
         httpClientContext!!.cookieStore = basicCookieStore
         httpClient = HttpClients.custom()
-                .setDefaultSocketConfig(SocketConfig.custom()
-                        .setSoTimeout(60 * 1000)
-                        .build())
-                .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectTimeout(60 * 1000)
-                        .setConnectionRequestTimeout(60 * 1000)
-                        .setSocketTimeout(60 * 1000)
-                        .build()).build()
+            .setConnectionManager(PoolingHttpClientConnectionManager().also {
+                it.maxTotal = 50
+                it.defaultMaxPerRoute = 20
+            })
+            .setDefaultSocketConfig(
+                SocketConfig.custom()
+                    .setSoTimeout(60 * 1000)
+                    .build()
+            )
+            .setDefaultRequestConfig(
+                RequestConfig.custom()
+                    .setConnectTimeout(60 * 1000)
+                    .setConnectionRequestTimeout(60 * 1000)
+                    .setSocketTimeout(60 * 1000)
+                    .build()
+            ).build()
     }
 
     constructor(httpClient: org.apache.http.client.HttpClient) {
@@ -84,7 +93,7 @@ open class ApacheHttpClient : HttpClient {
         }
 
         val requestBuilder = RequestBuilder.create(request.method())
-                .setUri(url)
+            .setUri(url)
 
         request.headers()?.forEach {
             requestBuilder.addHeader(it.name(), it.value())
@@ -130,8 +139,10 @@ open class ApacheHttpClient : HttpClient {
                 if (requestEntity != null) {
                     SpiUtils.loadService(ILogger::class)?.warn("The request with a body should not set content-type:${request.contentType()}")
                 }
-                requestEntity = StringEntity(request.body().toJson(),
-                        ContentType.APPLICATION_JSON)
+                requestEntity = StringEntity(
+                    request.body().toJson(),
+                    ContentType.APPLICATION_JSON
+                )
             }
             if (requestEntity != null) {
                 requestBuilder.entity = requestEntity
@@ -201,7 +212,7 @@ class ApacheCookieStore : CookieStore {
      */
     override fun addCookies(cookies: Array<Cookie>?) {
         cookies?.mapNotNull { cookie -> cookie.asApacheCookie() }
-                ?.forEach { cookieStore.addCookie(it) }
+            ?.forEach { cookieStore.addCookie(it) }
     }
 
     /**
@@ -230,8 +241,9 @@ class ApacheCookieStore : CookieStore {
  */
 @ScriptTypeName("response")
 class ApacheHttpResponse(
-        val request: HttpRequest,
-        val response: org.apache.http.HttpResponse) : AbstractHttpResponse() {
+    val request: HttpRequest,
+    val response: org.apache.http.HttpResponse
+) : AbstractHttpResponse() {
 
     /**
      * Obtains the status of this response.
@@ -367,11 +379,11 @@ fun Cookie.asApacheCookie(): org.apache.http.cookie.Cookie? {
         return this.getWrapper()
     }
     val cookie =
-            if (this.getPorts() == null || this.getCommentURL() == null) {
-                BasicClientCookie(this.getName(), this.getValue())
-            } else {
-                BasicClientCookie2(this.getName(), this.getValue())
-            }
+        if (this.getPorts() == null || this.getCommentURL() == null) {
+            BasicClientCookie(this.getName(), this.getValue())
+        } else {
+            BasicClientCookie2(this.getName(), this.getValue())
+        }
     cookie.comment = this.getComment()
     cookie.domain = this.getDomain()
     cookie.path = this.getPath()
