@@ -814,8 +814,12 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         return obj
     }
 
+    /**
+     * 是否开启智能推断，先默认关闭好了
+     */
     private fun needInfer(): Boolean {
-        return settingBinder!!.read().inferEnable
+        //return settingBinder!!.read().inferEnable
+        return false
     }
 
     protected fun formExpanded(): Boolean {
