@@ -2,9 +2,9 @@ package com.itangcent.idea.plugin.api.export.yapi
 
 import com.google.inject.Inject
 import com.itangcent.common.constant.Attrs
-import com.itangcent.common.utils.sub
 import com.itangcent.common.utils.KV
 import com.itangcent.common.utils.notNullOrBlank
+import com.itangcent.common.utils.sub
 import com.itangcent.idea.plugin.api.export.ClassExportRuleKeys
 import com.itangcent.idea.utils.CustomizedPsiClassHelper
 import com.itangcent.intellij.config.ConfigReader
@@ -31,7 +31,7 @@ class YapiPsiClassHelper : CustomizedPsiClassHelper() {
     @PostConstruct
     fun initYapiInfo() {
         val contextSwitchListener: ContextSwitchListener? = ActionContext.getContext()
-                ?.instance(ContextSwitchListener::class)
+            ?.instance(ContextSwitchListener::class)
         contextSwitchListener!!.onModuleChange {
             val resolveProperty = configReader!!.first("field.mock.resolveProperty")
             if (!resolveProperty.isNullOrBlank()) {
@@ -40,18 +40,34 @@ class YapiPsiClassHelper : CustomizedPsiClassHelper() {
         }
     }
 
-    override fun afterParseFieldOrMethod(fieldName: String, fieldType: DuckType, fieldOrMethod: ExplicitElement<*>, resourcePsiClass: ExplicitClass, option: Int, kv: KV<String, Any?>) {
+    override fun afterParseFieldOrMethod(
+        fieldName: String,
+        fieldType: DuckType,
+        fieldOrMethod: ExplicitElement<*>,
+        resourcePsiClass: ExplicitClass,
+        option: Int,
+        kv: KV<String, Any?>
+    ) {
         //compute `field.mock`
         ruleComputer!!.computer(ClassExportRuleKeys.FIELD_MOCK, fieldOrMethod)
-                ?.takeIf { !it.isBlank() }
-                ?.let { if (resolveProperty) configReader!!.resolveProperty(it) else it }
-                ?.let { mockInfo ->
-                    kv.sub(Attrs.MOCK_ATTR)[fieldName] = mockInfo
-                }
+            ?.takeIf { it.isNotBlank() }
+            ?.let { if (resolveProperty) configReader!!.resolveProperty(it) else it }
+            ?.let { mockInfo ->
+                kv.sub(Attrs.MOCK_ATTR)[fieldName] = mockInfo
+            }
+
+        ruleComputer.computer(ClassExportRuleKeys.FIELD_HIDDEN, fieldOrMethod)
+            ?.takeIf { it.isNotBlank() }
+            ?.let { if (resolveProperty) configReader!!.resolveProperty(it) else it }
+            ?.let { hiddenInfo ->
+                kv.sub(Attrs.HIDDEN_ATTR)[fieldName] = hiddenInfo
+            }
 
         //compute `field.demo`
-        val demoValue = ruleComputer.computer(YapiClassExportRuleKeys.FIELD_DEMO,
-                fieldOrMethod)
+        val demoValue = ruleComputer.computer(
+            YapiClassExportRuleKeys.FIELD_DEMO,
+            fieldOrMethod
+        )
         if (demoValue.notNullOrBlank()) {
             kv.sub(Attrs.DEMO_ATTR)[fieldName] = demoValue
         }

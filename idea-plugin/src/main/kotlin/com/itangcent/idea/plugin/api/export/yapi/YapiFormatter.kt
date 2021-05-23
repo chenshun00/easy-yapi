@@ -105,13 +105,11 @@ open class YapiFormatter {
 
         val item: HashMap<String, Any?> = HashMap()
 
-        item["edit_uid"] = 0
         item["status"] = methodDoc.getStatus()
         item["type"] = "static"
         item["req_body_is_json_schema"] = false
         item["res_body_is_json_schema"] = true
         item["api_opened"] = methodDoc.isOpen()
-        item["index"] = 0
         item["tag"] = methodDoc.getTags()
 
         item["title"] = methodDoc.name
@@ -290,14 +288,11 @@ open class YapiFormatter {
         item["session"] = request.session
         item["action"] = request.action
         item["domain"] = request.domain
-        item["edit_uid"] = 0
         item["status"] = request.getStatus()
         item["type"] = "static"
         item["req_body_is_json_schema"] = false
         item["res_body_is_json_schema"] = true
-        item["api_opened"] = request.isOpen()
-        item["index"] = 0
-        item["tag"] = request.getTags()
+//        item["api_opened"] = request.isOpen()
 
         item["title"] = request.name
 
@@ -311,7 +306,7 @@ open class YapiFormatter {
 //        item["path"] = formatPath(request.path)
 
         addTimeAttr(item)
-        item["__v"] = 0
+//        item["__v"] = 0
 
         item["method"] = request.method
 
@@ -329,6 +324,7 @@ open class YapiFormatter {
         }
 
         val queryList: MutableList<HashMap<String, Any?>> = LinkedList()
+        //查询参数*1
         item["req_query"] = queryList
         request.querys?.forEach {
             queryList.add(
@@ -343,6 +339,7 @@ open class YapiFormatter {
             )
         }
 
+        //查询参数*2
         if (request.formParams != null) {
             item["req_body_type"] = "form"
             val urlencodeds: ArrayList<HashMap<String, Any?>> = ArrayList()
@@ -359,6 +356,7 @@ open class YapiFormatter {
             }
         }
 
+
         if (request.paths != null) {
             val pathParmas: ArrayList<HashMap<String, Any?>> = ArrayList()
             item["req_params"] = pathParmas
@@ -372,6 +370,7 @@ open class YapiFormatter {
             }
         }
 
+        //响应参数
         if (request.body != null) {
             item["req_body_is_json_schema"] = true
             item["req_body_type"] = "json"
@@ -474,6 +473,8 @@ open class YapiFormatter {
             }
             val mocks: HashMap<String, Any?>? = typedObject[Attrs.MOCK_ATTR] as? HashMap<String, Any?>?
 
+            val hiddens: HashMap<String, Any?>? = typedObject[Attrs.HIDDEN_ATTR] as? HashMap<String, Any?>?
+
             typedObject.forEachValid { k, v ->
                 try {
                     val key = k.toString()
@@ -514,6 +515,8 @@ open class YapiFormatter {
                     }
                     mocks?.get(key)?.let { addMock(propertyInfo, it) }
 
+                    hiddens?.get(key)?.let { addHidden(propertyInfo, it) }
+
                     default?.get(k)?.takeUnless { it.anyIsNullOrBlank() }
                         ?.let { propertyInfo["default"] = it }
 
@@ -541,9 +544,11 @@ open class YapiFormatter {
                 }
             }
         }
-
-
         return item
+    }
+
+    private fun addHidden(item: HashMap<String, Any?>, hiddenStr: Any) {
+        item["hidden"] = "true"
     }
 
     private fun contactPath(path: String?, subPath: String): String {
