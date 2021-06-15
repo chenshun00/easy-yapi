@@ -51,4 +51,14 @@ fun Extensible.setDemo(demo: String?) {
     }
 }
 
+fun Extensible.setMock(mock: String?) {
+    if (mock.notNullOrBlank()) {
+        this.setExt(Attrs.MOCK_ATTR, mock)
+    }
+}
+
+fun Extensible.getMock(): String? {
+    return this.getExt(Attrs.MOCK_ATTR)
+}
+
 val EMPTY_TAGS: List<String> = Collections.emptyList<String>()

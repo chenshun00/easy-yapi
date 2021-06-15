@@ -51,7 +51,7 @@ open class YapiFormatter {
         if (doc is Request) {
             return request2Items(doc)
         } else if (doc is MethodDoc) {
-            return listOf(methodDoc2Item(doc))
+            throw IllegalArgumentException("unknown MethodDoc,联系luobo.cs@raycloud.com 处理")
         }
         throw IllegalArgumentException("unknown doc")
     }
@@ -123,9 +123,6 @@ open class YapiFormatter {
         val path = actionContext!!.callInReadUI { formatPath(getPathOfMethodDoc(methodDoc)) }
         queryPath["path"] = path
         item["path"] = path
-
-        addTimeAttr(item)
-        item["__v"] = 0
 
         item["method"] = actionContext.callInReadUI { getHttpMethodOfMethodDoc(methodDoc) }
 
@@ -305,7 +302,6 @@ open class YapiFormatter {
 //        queryPath["path"] = formatPath(request.path)
 //        item["path"] = formatPath(request.path)
 
-        addTimeAttr(item)
 //        item["__v"] = 0
 
         item["method"] = request.method
@@ -577,11 +573,6 @@ open class YapiFormatter {
         item["type"] = "object"
         item["properties"] = HashMap<String, Any?>()
         return item
-    }
-
-    private fun addTimeAttr(item: HashMap<String, Any?>) {
-        item["add_time"] = System.currentTimeMillis() / 1000
-        item["up_time"] = System.currentTimeMillis() / 1000
     }
 
     private fun appendDescToApiItem(item: HashMap<String, Any?>, desc: String?) {
