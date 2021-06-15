@@ -98,8 +98,8 @@ fun RequestHelper.addParamAndTypeAndSubType(
     return param
 }
 
-fun RequestHelper.addFormParam(request: Request, paramName: String, defaultVal: String?, desc: String?) {
-    addFormParam(request, paramName, defaultVal, false, desc, "string", null)
+fun RequestHelper.addFormParam(request: Request, paramName: String, defaultVal: String?, desc: String?) : FormParam {
+    return addFormParam(request, paramName, defaultVal, false, desc, "string", null)
 }
 
 fun RequestHelper.addFormParam(

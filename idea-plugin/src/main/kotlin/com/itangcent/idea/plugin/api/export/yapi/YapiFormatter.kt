@@ -332,6 +332,7 @@ open class YapiFormatter {
                     .set("type", it.type)
                     .set("subType", it.subType)
                     .set("required", it.required.asInt())
+                    .set("mock", it.mock)
             )
         }
 
@@ -348,6 +349,7 @@ open class YapiFormatter {
                         .set("type", it.type)
                         .set("required", it.required.asInt())
                         .set("desc", it.desc)
+                        .set("mock", it.mock)
                 )
             }
         }

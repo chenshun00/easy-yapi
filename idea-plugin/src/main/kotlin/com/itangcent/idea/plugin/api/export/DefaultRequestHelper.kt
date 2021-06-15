@@ -70,8 +70,8 @@ open class DefaultRequestHelper : RequestHelper {
             model.forEach { (k, v) ->
                 addFormParam(
                         request, k.toString(), (default?.get(k) ?: v).toPrettyString(),
-                        KVUtils.getUltimateComment(comment, k), mock?.get(k) as String?
-                )
+                        KVUtils.getUltimateComment(comment, k)
+                ).setMockX(mock?.getAs(k))
             }
         }
     }

@@ -179,8 +179,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
      * 集中处理参数
      */
     private fun exportMethodApi(
-        psiClass: PsiClass, method: ExplicitMethod, kv: KV<String, Any?>,
-        docHandle: DocHandle
+            psiClass: PsiClass, method: ExplicitMethod, kv: KV<String, Any?>,
+            docHandle: DocHandle
     ) {
 //        logger!!.info("check here")
         actionContext!!.checkStatus()
@@ -212,9 +212,9 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
 
         //computer content-type.
         ruleComputer!!.computer(ClassExportRuleKeys.METHOD_CONTENT_TYPE, method)
-            ?.let {
-                requestHelper!!.setContentType(request, it)
-            }
+                ?.let {
+                    requestHelper!!.setContentType(request, it)
+                }
 
     }
 
@@ -229,8 +229,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
     protected open fun processCompleted(method: ExplicitMethod, kv: KV<String, Any?>, request: Request) {
         //parse additionalHeader by config
         val additionalHeader = ruleComputer!!.computer(
-            ClassExportRuleKeys.METHOD_ADDITIONAL_HEADER,
-            method
+                ClassExportRuleKeys.METHOD_ADDITIONAL_HEADER,
+                method
         )
         if (additionalHeader.notNullOrEmpty()) {
             val additionalHeaders = additionalHeader!!.lines()
@@ -281,7 +281,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         //parse additionalResponseHeader by config
         if (request.response.notNullOrEmpty()) {
             val additionalResponseHeader =
-                ruleComputer.computer(ClassExportRuleKeys.METHOD_ADDITIONAL_RESPONSE_HEADER, method)
+                    ruleComputer.computer(ClassExportRuleKeys.METHOD_ADDITIONAL_RESPONSE_HEADER, method)
             if (additionalResponseHeader.notNullOrEmpty()) {
                 val additionalHeaders = additionalResponseHeader!!.lines()
                 for (headerStr in additionalHeaders) {
@@ -344,7 +344,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                             override fun linkToPsiElement(plainText: String, linkTo: Any?): String? {
 
                                 psiClassHelper!!.resolveEnumOrStatic(plainText, method.psi(), "")
-                                    ?.let { options.addAll(it) }
+                                        ?.let { options.addAll(it) }
 
                                 return super.linkToPsiElement(plainText, linkTo)
                             }
@@ -436,7 +436,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                     override fun linkToPsiElement(plainText: String, linkTo: Any?): String? {
 
                         psiClassHelper!!.resolveEnumOrStatic(plainText, psiMethod, name)
-                            ?.let { options.addAll(it) }
+                                ?.let { options.addAll(it) }
 
                         return super.linkToPsiElement(plainText, linkTo)
                     }
@@ -477,27 +477,27 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
     private fun foreachMethod(cls: PsiClass, handle: (ExplicitMethod) -> Unit) {
 //        logger!!.info("[数量: ${duckTypeHelper!!.explicit(cls).methods().size}]")
         duckTypeHelper!!.explicit(cls)
-            .methods()
-            .stream()
+                .methods()
+                .stream()
 //            //不是object方法
-            .filter { !jvmClassHelper!!.isBasicMethod(it.psi().name) }
+                .filter { !jvmClassHelper!!.isBasicMethod(it.psi().name) }
 //            //不是static方法
-            .filter { !it.psi().hasModifierProperty("static") }
-            .filter { !it.psi().hasModifierProperty("private") }
-            .filter { !it.psi().hasModifierProperty("protected") }
+                .filter { !it.psi().hasModifierProperty("static") }
+                .filter { !it.psi().hasModifierProperty("private") }
+                .filter { !it.psi().hasModifierProperty("protected") }
 //            //不是构造器方法
-            .filter { !it.psi().isConstructor }
+                .filter { !it.psi().isConstructor }
 //            //跳过不生成的
-            .filter { !shouldIgnore(it) }
+                .filter { !shouldIgnore(it) }
 //            .peek {
 //                logger!!.info("[开始处理方法前:${it.name()}]")
 //            }
-            //跳过被标记的
-            .filter { !shouldIgnoreAnnotation(it) }
+                //跳过被标记的
+                .filter { !shouldIgnoreAnnotation(it) }
 //            .peek {
 //                logger!!.info("[开始处理方法后:${it.name()}]")
 //            }
-            .forEach(handle)
+                .forEach(handle)
     }
 
     @Throws(RuntimeException::class)
@@ -527,7 +527,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
             requestHelper.setSession(request, false)
         }
         val action = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_ACTION)
-            ?: throw RuntimeException("请在方法${method.name()}上添加${SpringClassName.API_ACTION}注解,申明Action")
+                ?: throw RuntimeException("请在方法${method.name()}上添加${SpringClassName.API_ACTION}注解,申明Action")
         requestHelper.setAction(request, action)
 
         val apiClassGroup = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_CLASS_GROUP, "session")
@@ -540,7 +540,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
             requestHelper.setSession(request, actionSession == "true")
         }
 
-        val domain = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_CLASS_GROUP, "domain") ?: "api-inner.raycloud.com"
+        val domain = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_CLASS_GROUP, "domain")
+                ?: "api-inner.raycloud.com"
         requestHelper.setDomain(request, domain)
 
         //参数不为空
@@ -564,8 +565,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                         continue
                     }
                     val typeObject = psiClassHelper!!.getTypeObject(
-                        paramType, param.psi(),
-                        jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
+                            paramType, param.psi(),
+                            jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
                     )
                     val x = param to typeObject
 
@@ -582,8 +583,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                     logger?.warn("file param in `GET` API [${request.path}]")
                 } else if (request.method == null || request.method == HttpMethod.NO_METHOD) {
                     request.method = ruleComputer!!.computer(
-                        ClassExportRuleKeys.METHOD_DEFAULT_HTTP_METHOD,
-                        method
+                            ClassExportRuleKeys.METHOD_DEFAULT_HTTP_METHOD,
+                            method
                     ) ?: HttpMethod.POST
                 }
                 requestHelper.addHeader(request, "Content-Type", "multipart/form-data")
@@ -595,10 +596,10 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
 
                 try {
                     processMethodParameter(
-                        request,
-                        ExplicitParameterInfo(param),
-                        typeObject,
-                        KVUtils.getUltimateComment(paramDocComment, param.name()).append(readParamDoc(param))
+                            request,
+                            ExplicitParameterInfo(param),
+                            typeObject,
+                            KVUtils.getUltimateComment(paramDocComment, param.name()).append(readParamDoc(param))
                     )
                 } finally {
                     ruleComputer.computer(ClassExportRuleKeys.PARAM_AFTER, param)
@@ -608,8 +609,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
 
         if (request.method == null || request.method == HttpMethod.NO_METHOD) {
             val defaultHttpMethod = ruleComputer!!.computer(
-                ClassExportRuleKeys.METHOD_DEFAULT_HTTP_METHOD,
-                method
+                    ClassExportRuleKeys.METHOD_DEFAULT_HTTP_METHOD,
+                    method
             )
             requestHelper.setMethod(request, defaultHttpMethod ?: HttpMethod.GET)
         }
@@ -626,9 +627,9 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         requestHelper!!.setMethodIfMissed(request, HttpMethod.POST)
         requestHelper.addHeader(request, "Content-Type", "application/json")
         requestHelper.setJsonBody(
-            request,
-            typeObject,
-            paramDesc
+                request,
+                typeObject,
+                paramDesc
         )
         return
     }
@@ -639,31 +640,31 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         try {
             if (typeObject == Magics.FILE_STR) {
                 requestHelper!!.addFormFileParam(
-                    request, parameter.name(),
-                    parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
-                    ?: false, paramDesc
+                        request, parameter.name(),
+                        parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
+                        ?: false, paramDesc
                 )
             } else if (typeObject != null && typeObject is Map<*, *>) {
                 if (request.hasBodyOrForm() && formExpanded() && typeObject.isComplex()
-                    && requestHelper!!.addHeaderIfMissed(request, "Content-Type", "multipart/form-data")
+                        && requestHelper!!.addHeaderIfMissed(request, "Content-Type", "multipart/form-data")
                 ) {
                     typeObject.flatValid(object : FieldConsumer {
                         override fun consume(parent: Map<*, *>?, path: String, key: String, value: Any?) {
                             val fv = deepComponent(value)
                             if (fv == Magics.FILE_STR) {
                                 requestHelper.addFormFileParam(
-                                    request, path,
-                                    parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
-                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
-                                )
+                                        request, path,
+                                        parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
+                                        KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
+                                ).setMockX(parent?.getAs(Attrs.DEMO_ATTR, key))
                             } else {
                                 val get = typeObject[key]
                                 requestHelper.addFormParam(
-                                    request, path, tinyQueryParam(value.toString()),
-                                    parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
-                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key),
-                                    yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
-                                )
+                                        request, path, tinyQueryParam(value.toString()),
+                                        parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
+                                        KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key),
+                                        yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
+                                ).setMockX(parent?.getAs(Attrs.DEMO_ATTR, key))
                             }
                         }
                     })
@@ -671,6 +672,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                     val fields = typeObject.asKV()
                     val comment = fields.getAsKv(Attrs.COMMENT_ATTR)
                     val required = fields.getAsKv(Attrs.REQUIRED_ATTR)
+                    val mock = fields.getAsKv(Attrs.MOCK_ATTR)
                     fields.forEachValid { filedName, fieldVal ->
                         val fv = deepComponent(fieldVal)
                         if (fv == Magics.FILE_STR) {
@@ -678,24 +680,24 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                                 logger!!.warn("try upload file at `GET:`${request.path}")
                             }
                             requestHelper!!.addFormFileParam(
-                                request, filedName,
-                                required?.getAs(filedName) ?: false,
-                                KVUtils.getUltimateComment(comment, filedName)
-                            )
+                                    request, filedName,
+                                    required?.getAs(filedName) ?: false,
+                                    KVUtils.getUltimateComment(comment, filedName)
+                            ).setMockX(mock?.getAs(Attrs.DEMO_ATTR, filedName))
                         } else {
                             requestHelper!!.addParam(
-                                request, filedName, null,
-                                required?.getAs(filedName) ?: false,
-                                KVUtils.getUltimateComment(comment, filedName)
-                            )
+                                    request, filedName, null,
+                                    required?.getAs(filedName) ?: false,
+                                    KVUtils.getUltimateComment(comment, filedName)
+                            ).setMockX(mock?.getAs(Attrs.DEMO_ATTR, filedName))
                         }
                     }
                 }
             } else {
                 requestHelper!!.addParam(
-                    request, parameter.name(), tinyQueryParam(typeObject?.toString()),
-                    parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
-                    ?: false, paramDesc
+                        request, parameter.name(), tinyQueryParam(typeObject?.toString()),
+                        parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
+                        ?: false, paramDesc
                 )
             }
         } catch (e: Exception) {
@@ -710,29 +712,29 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         try {
             if (typeObject == Magics.FILE_STR) {
                 requestHelper!!.addFormFileParam(
-                    request, parameter.name(),
-                    ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter) ?: false, paramDesc
+                        request, parameter.name(),
+                        ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter) ?: false, paramDesc
                 )
             } else if (typeObject != null && typeObject is Map<*, *>) {
                 if (formExpanded() && typeObject.isComplex()
-                    && requestHelper!!.addHeaderIfMissed(request, "Content-Type", "multipart/form-data")
+                        && requestHelper!!.addHeaderIfMissed(request, "Content-Type", "multipart/form-data")
                 ) {
                     typeObject.flatValid(object : FieldConsumer {
                         override fun consume(parent: Map<*, *>?, path: String, key: String, value: Any?) {
                             val fv = deepComponent(value)
                             if (fv == Magics.FILE_STR) {
                                 requestHelper.addFormFileParam(
-                                    request, path,
-                                    parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
-                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
+                                        request, path,
+                                        parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
+                                        KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
                                 )
                             } else {
                                 val get = typeObject[key]
                                 requestHelper.addFormParam(
-                                    request, path, tinyQueryParam(value.toString()),
-                                    parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
-                                    KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key),
-                                    yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
+                                        request, path, tinyQueryParam(value.toString()),
+                                        parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
+                                        KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key),
+                                        yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
                                 )
                             }
                         }
@@ -746,26 +748,26 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                         val fv = deepComponent(fieldVal)
                         if (fv == Magics.FILE_STR) {
                             requestHelper.addFormFileParam(
-                                request, filedName,
-                                required?.getAs(filedName) ?: false,
-                                KVUtils.getUltimateComment(comment, filedName)
+                                    request, filedName,
+                                    required?.getAs(filedName) ?: false,
+                                    KVUtils.getUltimateComment(comment, filedName)
                             )
                         } else {
                             val get = typeObject[filedName]
                             requestHelper.addFormParam(
-                                request, filedName, null,
-                                required?.getAs(filedName) ?: false,
-                                KVUtils.getUltimateComment(comment, filedName),
-                                yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
+                                    request, filedName, null,
+                                    required?.getAs(filedName) ?: false,
+                                    KVUtils.getUltimateComment(comment, filedName),
+                                    yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
                             )
                         }
                     }
                 }
             } else {
                 requestHelper!!.addFormParam(
-                    request, parameter.name(), tinyQueryParam(typeObject?.toString()),
-                    parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
-                    ?: false, paramDesc, "string", null
+                        request, parameter.name(), tinyQueryParam(typeObject?.toString()),
+                        parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
+                        ?: false, paramDesc, "string", null
                 )
             }
         } catch (e: Exception) {
@@ -783,8 +785,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
 
         return when {
             fromRule -> psiClassHelper!!.getTypeObject(
-                psiType, method.psi(),
-                jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
+                    psiType, method.psi(),
+                    jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
             )
             needInfer() && (!duckTypeHelper!!.isQualified(psiType) ||
                     jvmClassHelper!!.isInterface(psiType)) -> {
@@ -793,8 +795,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
 //                actionContext!!.callWithTimeout(20000) { methodReturnInferHelper.inferReturn(method) }
             }
             else -> psiClassHelper!!.getTypeObject(
-                psiType, method.psi(),
-                jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
+                    psiType, method.psi(),
+                    jsonSetting!!.jsonOption(JsonOption.READ_COMMENT)
             )
         }
     }

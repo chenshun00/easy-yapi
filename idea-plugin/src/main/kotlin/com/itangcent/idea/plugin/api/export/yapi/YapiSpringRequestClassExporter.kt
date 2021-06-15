@@ -274,7 +274,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                                     request, path,
                                     parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
                                     KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
-                                ).setDemo(parent?.getAs(Attrs.DEMO_ATTR, key))
+                                ).setMockX(parent?.getAs(Attrs.DEMO_ATTR, key))
                             } else {
                                 if (!path.contains(".") && path != "traceId") {
                                     val get = typeObject[key]
@@ -283,7 +283,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                                         parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
                                         KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key),
                                         yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
-                                    ).setDemo(parent?.getAs(Attrs.DEMO_ATTR, key))
+                                    ).setMockX(parent?.getAs(Attrs.DEMO_ATTR, key))
                                 }
                             }
                         }
@@ -293,6 +293,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                     val comment = fields.getAsKv(Attrs.COMMENT_ATTR)
                     val required = fields.getAsKv(Attrs.REQUIRED_ATTR)
                     val demo = fields.getAsKv(Attrs.DEMO_ATTR)
+                    val mock = fields.getAsKv(Attrs.MOCK_ATTR)
                     fields.forEachValid { filedName, fieldVal ->
                         val fv = deepComponent(fieldVal)
                         if (fv == Magics.FILE_STR) {
@@ -303,7 +304,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                                 request, filedName,
                                 required?.getAs(filedName) ?: false,
                                 KVUtils.getUltimateComment(comment, filedName)
-                            ).setDemo(demo?.getAs(filedName))
+                            ).setMockX(mock?.getAs(filedName))
                         } else {
                             val get = typeObject[filedName]
                             requestHelper!!.addParamAndTypeAndSubType(
@@ -312,7 +313,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                                 required?.getAs(filedName)
                                     ?: false, KVUtils.getUltimateComment(comment, filedName),
                                 yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
-                            ).setDemo(demo?.getAs(filedName))
+                            ).setMockX(mock?.getAs(filedName))
                         }
                     }
                 }

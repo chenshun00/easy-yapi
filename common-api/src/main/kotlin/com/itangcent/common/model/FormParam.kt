@@ -3,7 +3,7 @@ package com.itangcent.common.model
 import com.itangcent.common.utils.SimpleExtensible
 import java.io.Serializable
 
-class FormParam : SimpleExtensible(), Serializable {
+open class FormParam : SimpleExtensible(), Serializable {
 
     var name: String? = null
 
@@ -21,4 +21,8 @@ class FormParam : SimpleExtensible(), Serializable {
     var subType: String? = null
 
     var mock: String? = null
+
+    fun setMockX(mock: String?){
+        this.mock =mock
+    }
 }
