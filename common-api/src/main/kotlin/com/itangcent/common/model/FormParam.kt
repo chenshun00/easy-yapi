@@ -19,4 +19,6 @@ class FormParam : SimpleExtensible(), Serializable {
     var type: String? = null
 
     var subType: String? = null
+
+    var mock: String? = null
 }

@@ -4,6 +4,7 @@ import com.google.inject.Singleton
 import com.itangcent.common.constant.Attrs
 import com.itangcent.common.kit.KVUtils
 import com.itangcent.common.model.*
+import com.itangcent.common.utils.getAs
 import com.itangcent.intellij.extend.toPrettyString
 import java.util.*
 
@@ -65,10 +66,11 @@ open class DefaultRequestHelper : RequestHelper {
         if (model is Map<*, *>) {
             val comment = model[Attrs.COMMENT_ATTR] as Map<*, *>?
             val default = model[Attrs.DEFAULT_VALUE_ATTR] as Map<*, *>?
+            val mock = model[Attrs.MOCK_ATTR] as Map<*, *>?
             model.forEach { (k, v) ->
                 addFormParam(
-                    request, k.toString(), (default?.get(k) ?: v).toPrettyString(),
-                    KVUtils.getUltimateComment(comment, k)
+                        request, k.toString(), (default?.get(k) ?: v).toPrettyString(),
+                        KVUtils.getUltimateComment(comment, k), mock?.get(k) as String?
                 )
             }
         }
