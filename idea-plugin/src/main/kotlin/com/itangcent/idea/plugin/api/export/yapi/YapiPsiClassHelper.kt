@@ -40,6 +40,10 @@ class YapiPsiClassHelper : CustomizedPsiClassHelper() {
         }
     }
 
+    override fun parseFieldOrMethod(fieldName: String, fieldType: DuckType, fieldOrMethod: ExplicitElement<*>, resourcePsiClass: ExplicitClass, option: Int, kv: KV<String, Any?>) {
+        super.parseFieldOrMethod(fieldName, fieldType, fieldOrMethod, resourcePsiClass, option, kv)
+    }
+
     override fun afterParseFieldOrMethod(
         fieldName: String,
         fieldType: DuckType,

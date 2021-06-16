@@ -22,7 +22,9 @@ open class Param : SimpleExtensible(), Serializable {
 
     var mock: String? = null
 
-    fun setMockX(mock: String?){
-        this.mock =mock
+    fun setMockX(mock: String?): Param {
+        this.mock = mock
+        return this
+
     }
 }

@@ -489,6 +489,10 @@ open class SpringRequestClassExporter : AbstractRequestClassExporter() {
         return annotationHelper!!.findAnnMap(parameter, SpringClassName.REQUEST_PARAM_ANNOTATION)
     }
 
+    protected fun findMock(parameter: PsiParameter): Map<String, Any?>? {
+        return annotationHelper!!.findAnnMap(parameter, SpringClassName.MOCK_ANNOTATION)
+    }
+
     protected fun findParamName(requestParamAnn: Map<String, Any?>?): String? {
         return requestParamAnn.any("name", "value")?.toString()
     }

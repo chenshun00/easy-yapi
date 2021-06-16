@@ -714,7 +714,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                 requestHelper!!.addFormFileParam(
                         request, parameter.name(),
                         ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter) ?: false, paramDesc
-                )
+                ).setMockX(parameter.mock)
             } else if (typeObject != null && typeObject is Map<*, *>) {
                 if (formExpanded() && typeObject.isComplex()
                         && requestHelper!!.addHeaderIfMissed(request, "Content-Type", "multipart/form-data")
@@ -727,7 +727,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                                         request, path,
                                         parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
                                         KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key)
-                                )
+                                ).setMockX(parent?.getAs<String>(Attrs.MOCK_ATTR, key))
                             } else {
                                 val get = typeObject[key]
                                 requestHelper.addFormParam(
@@ -735,7 +735,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                                         parent?.getAs<Boolean>(Attrs.REQUIRED_ATTR, key) ?: false,
                                         KVUtils.getUltimateComment(parent?.getAs(Attrs.COMMENT_ATTR), key),
                                         yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
-                                )
+                                ).setMockX(parent?.getAs<String>(Attrs.MOCK_ATTR, key))
                             }
                         }
                     })
@@ -743,6 +743,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                     val fields = typeObject.asKV()
                     val comment = fields.getAsKv(Attrs.COMMENT_ATTR)
                     val required = fields.getAsKv(Attrs.REQUIRED_ATTR)
+                    val mock = fields.getAsKv(Attrs.MOCK_ATTR)
                     requestHelper!!.addHeaderIfMissed(request, "Content-Type", "application/x-www-form-urlencoded")
                     fields.forEachValid { filedName, fieldVal ->
                         val fv = deepComponent(fieldVal)
@@ -759,7 +760,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                                     required?.getAs(filedName) ?: false,
                                     KVUtils.getUltimateComment(comment, filedName),
                                     yapiFormatter!!.getTypeOfInput(get), yapiFormatter.getSubTypeOfType(get)
-                            )
+                            ).setMockX(mock?.getAs(filedName) as String)
                         }
                     }
                 }
@@ -768,7 +769,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                         request, parameter.name(), tinyQueryParam(typeObject?.toString()),
                         parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
                         ?: false, paramDesc, "string", null
-                )
+                ).setMockX(parameter.mock)
             }
         } catch (e: Exception) {
             logger!!.traceError("error to parse[" + parameter.getType()?.canonicalText() + "] as ModelAttribute", e)
@@ -869,6 +870,14 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
             }
             set(value) {
                 extras()[3] = value
+            }
+
+        var mock: String?
+            get() {
+                return extras?.get(4) as? String
+            }
+            set(value) {
+                extras()[4] = value
             }
 
         override fun name(): String {

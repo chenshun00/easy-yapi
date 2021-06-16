@@ -163,11 +163,16 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
         var paramType: String? = null
 
         val requestParamAnn = findRequestParam(parameter.psi())
+        val mockAnn = findMock(parameter.psi())
 
         if (requestParamAnn != null) {
             parameter.paramName = findParamName(requestParamAnn)
             parameter.required = findRequired(requestParamAnn)
             parameter.defaultVal = findDefaultValue(requestParamAnn)
+
+            if(mockAnn != null){
+                parameter.mock =  findParamName(mockAnn)
+            }
 
             if (request.method == "GET") {
                 paramType = "query"
@@ -261,7 +266,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                     request, parameter.name(),
                     parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
                     ?: false, paramDesc
-                )
+                ).setMockX(parameter.mock)
             } else if (typeObject != null && typeObject is Map<*, *>) {
                 if (request.hasBodyOrForm() && formExpanded() && typeObject.isComplex()
                     && requestHelper!!.addHeaderIfMissed(request, "Content-Type", "multipart/form-data")
@@ -292,7 +297,6 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                     val fields = typeObject.asKV()
                     val comment = fields.getAsKv(Attrs.COMMENT_ATTR)
                     val required = fields.getAsKv(Attrs.REQUIRED_ATTR)
-                    val demo = fields.getAsKv(Attrs.DEMO_ATTR)
                     val mock = fields.getAsKv(Attrs.MOCK_ATTR)
                     fields.forEachValid { filedName, fieldVal ->
                         val fv = deepComponent(fieldVal)
@@ -322,7 +326,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                     request, parameter.name(), tinyQueryParam(typeObject?.toString()),
                     parameter.required ?: ruleComputer!!.computer(ClassExportRuleKeys.PARAM_REQUIRED, parameter)
                     ?: false, paramDesc, yapiFormatter!!.getTypeOfInput(typeObject), yapiFormatter.getSubTypeOfType(typeObject)
-                )
+                ).setMockX(parameter.mock)
             }
         } catch (e: Exception) {
             logger!!.traceError("error to parse[" + parameter.getType()?.canonicalText() + "] as Querys", e)

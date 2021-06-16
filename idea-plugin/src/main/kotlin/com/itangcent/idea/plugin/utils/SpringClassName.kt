@@ -33,6 +33,8 @@ class SpringClassName {
         const val PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable"
         const val COOKIE_VALUE_ANNOTATION = "org.springframework.web.bind.annotation.CookieValue"
 
+        const val MOCK_ANNOTATION = "com.raycloud.yapi.api.Mock";
+
         const val REQUEST_HEADER = "org.springframework.web.bind.annotation.RequestHeader"
 
         const val GET_MAPPING = "org.springframework.web.bind.annotation.GetMapping"

@@ -22,7 +22,8 @@ open class FormParam : SimpleExtensible(), Serializable {
 
     var mock: String? = null
 
-    fun setMockX(mock: String?){
+    fun setMockX(mock: String?) : FormParam{
         this.mock =mock
+        return this
     }
 }
