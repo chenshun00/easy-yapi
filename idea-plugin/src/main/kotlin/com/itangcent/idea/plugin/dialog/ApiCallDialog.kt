@@ -1020,8 +1020,8 @@ class ApiCallDialog : JDialog() {
 
     companion object {
         var CONTENT_TYPES: Array<String> = arrayOf("",
-                "application/json",
-                "application/x-www-form-urlencoded",
+                "application/json;charset=UTF-8",
+                "application/x-www-form-urlencoded;charset=UTF-8",
                 "multipart/form-data",
                 "application/xml")
 

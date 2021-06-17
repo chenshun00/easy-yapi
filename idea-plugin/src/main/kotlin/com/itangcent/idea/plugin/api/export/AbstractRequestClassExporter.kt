@@ -620,7 +620,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         }
 
         if (request.hasBodyOrForm()) {
-            requestHelper.addHeaderIfMissed(request, "Content-Type", "application/x-www-form-urlencoded")
+            requestHelper.addHeaderIfMissed(request, "Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
         }
 
     }
@@ -629,7 +629,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
 
     protected fun setRequestBody(request: Request, typeObject: Any?, paramDesc: String?) {
         requestHelper!!.setMethodIfMissed(request, HttpMethod.POST)
-        requestHelper.addHeader(request, "Content-Type", "application/json")
+        requestHelper.addHeader(request, "Content-Type", "application/json;charset=UTF-8")
         requestHelper.setJsonBody(
                 request,
                 typeObject,
@@ -748,7 +748,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                     val comment = fields.getAsKv(Attrs.COMMENT_ATTR)
                     val required = fields.getAsKv(Attrs.REQUIRED_ATTR)
                     val mock = fields.getAsKv(Attrs.MOCK_ATTR)
-                    requestHelper!!.addHeaderIfMissed(request, "Content-Type", "application/x-www-form-urlencoded")
+                    requestHelper!!.addHeaderIfMissed(request, "Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
                     fields.forEachValid { filedName, fieldVal ->
                         val fv = deepComponent(fieldVal)
                         if (fv == Magics.FILE_STR) {

@@ -44,7 +44,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
         //RequestBody(json)
         if (isRequestBody(parameter.psi())) {
             requestHelper!!.setMethodIfMissed(request, HttpMethod.POST)
-            requestHelper.addHeader(request, "Content-Type", "application/json")
+            requestHelper.addHeader(request, "Content-Type", "application/json;charset=UTF-8")
             requestHelper.setJsonBody(
                 request,
                 typeObject,
@@ -373,7 +373,7 @@ open class YapiSpringRequestClassExporter : SpringRequestClassExporter() {
                     val comment = fields.getAsKv(Attrs.COMMENT_ATTR)
                     val required = fields.getAsKv(Attrs.REQUIRED_ATTR)
                     val demo = fields.getAsKv(Attrs.DEMO_ATTR)
-                    requestHelper!!.addHeaderIfMissed(request, "Content-Type", "application/x-www-form-urlencoded")
+                    requestHelper!!.addHeaderIfMissed(request, "Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
                     fields.forEachValid { filedName, fieldVal ->
                         val fv = deepComponent(fieldVal)
                         if (fv == Magics.FILE_STR) {
