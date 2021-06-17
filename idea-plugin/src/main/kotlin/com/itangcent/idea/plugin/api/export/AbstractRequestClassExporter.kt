@@ -39,6 +39,8 @@ import kotlin.reflect.KClass
 
 abstract class AbstractRequestClassExporter : ClassExporter, Worker {
 
+    val _DOMAIN = "api-inner.raycloud.com"
+
     @Inject
     protected val cacheAble: CacheAble? = null
 
@@ -504,9 +506,11 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
     private fun processMethodParameters(method: ExplicitMethod, request: Request) {
 
         val params = method.getParameters()
-        //处理SDK的形式
-        val findAttr = annotationHelper!!.findAttrAsString(method.psi(), "com.raycloud.yapi.api.ApiRequest")
-        if (findAttr == null) {
+
+        val findAnnMap = annotationHelper!!.findAnnMap(method.psi(), SpringClassName.API_ACTION)
+
+        val findAttr = findAnnMap?.get("request")
+        if (findAttr == null || findAttr === "request") {
             if (method is ExplicitMethodWithOutGenericInfo) {
                 var name = method.name()
                 if (!name.endsWith("Request")) {
@@ -517,7 +521,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                 throw RuntimeException("method不是ExplicitMethodWithOutGenericInfo类型,当初测试未发现:${method.javaClass.simpleName}")
             }
         } else {
-            requestHelper!!.setReq(request, findAttr);
+            requestHelper!!.setReq(request, findAttr as String)
         }
 
         val session = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_SESSION)
@@ -540,8 +544,8 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
             requestHelper.setSession(request, actionSession == "true")
         }
 
-        val domain = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_CLASS_GROUP, "domain")
-                ?: "api-inner.raycloud.com"
+        val domain = annotationHelper.findAttrAsString(method.containClass().psi(), SpringClassName.API_CLASS_GROUP, "domain")
+                ?: _DOMAIN
         requestHelper.setDomain(request, domain)
 
         //参数不为空
