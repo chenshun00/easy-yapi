@@ -14,8 +14,6 @@ interface RequestHelper {
 
     fun setReq(request: Request, req: String)
 
-    fun setOnlineOrNot(request: Request, online: String)
-
     fun setSession(request: Request, session: Boolean)
 
     fun setAction(request: Request, action: String)

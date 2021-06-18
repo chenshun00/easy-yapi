@@ -136,16 +136,20 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                     val kv = KV.create<String, Any?>()
                     //处理class文件,主要是获取path和method
                     processClass(cls, kv)
+                    var index = 1;
                     //遍历处理文件中的method了
                     this.foreachMethod(cls) { explicitMethod ->
                         val method = explicitMethod.psi()
                         //被Spring的注解标记
                         if (isApi(method)) {
                             try {
+                                kv["index"] = index
                                 //kv.put(method.)
                                 exportMethodApi(cls, explicitMethod, kv, docHandle)
                             } catch (e: Exception) {
                                 logger.traceError("error to export api from method:" + method.name, e)
+                            } finally {
+                                index += 1
                             }
                         }
                     }
@@ -188,6 +192,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
         actionContext!!.checkStatus()
         //设置new Request()
         val request = Request()
+        request.index = kv["index"] as Int
 
         request.resource = PsiMethodResource(method.psi(), psiClass)
         //这部分比较简单

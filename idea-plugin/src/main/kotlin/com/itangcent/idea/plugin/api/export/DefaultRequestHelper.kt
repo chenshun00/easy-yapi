@@ -42,10 +42,6 @@ open class DefaultRequestHelper : RequestHelper {
         request.req = req
     }
 
-    override fun setOnlineOrNot(request: Request, online: String) {
-        request.online = online
-    }
-
     override fun setSession(request: Request, session: Boolean) {
         request.session = session
     }

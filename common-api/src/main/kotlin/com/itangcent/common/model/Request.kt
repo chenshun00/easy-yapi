@@ -28,7 +28,7 @@ open class Request : Doc() {
 
     var req: String? = null
 
-    var online: String? = "offline"
+    var index: Int = 1
 
     var session: Boolean = false
     var action: String? = null
@@ -71,10 +71,10 @@ fun Request.header(name: String): String? {
     }
     val lowerName = name.toLowerCase()
     return this.headers!!
-        .stream()
-        .filter { it.name?.toLowerCase() == lowerName }
-        .map { it.value }
-        .firstOrNull()
+            .stream()
+            .filter { it.name?.toLowerCase() == lowerName }
+            .map { it.value }
+            .firstOrNull()
 }
 
 fun Request.hasBodyOrForm(): Boolean {
