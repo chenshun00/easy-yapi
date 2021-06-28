@@ -28,6 +28,7 @@ class SpringClassName {
         const val REQUEST_MAPPING_ANNOTATION = "org.springframework.web.bind.annotation.RequestMapping"
         const val REQUEST_BODY_ANNOTATION = "org.springframework.web.bind.annotation.RequestBody"
         const val TAOBAO_MINI_BODY_ANNOTATION = "com.taobao.miniapp.function.anotation.DataCast"
+        const val CUSTOM_MINI_BODY_ANNOTATION = "com.raycloud.yapi.api.Body"
         const val REQUEST_PARAM_ANNOTATION = "org.springframework.web.bind.annotation.RequestParam"
         const val MODEL_ATTRIBUTE_ANNOTATION = "org.springframework.web.bind.annotation.ModelAttribute"
         const val PATH_VARIABLE_ANNOTATION = "org.springframework.web.bind.annotation.PathVariable"

@@ -145,6 +145,7 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
                             try {
                                 kv["index"] = index
                                 //kv.put(method.)
+                                Thread.sleep(300)
                                 exportMethodApi(cls, explicitMethod, kv, docHandle)
                             } catch (e: Exception) {
                                 logger.traceError("error to export api from method:" + method.name, e)
