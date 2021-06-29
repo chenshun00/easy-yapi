@@ -280,7 +280,6 @@ open class YapiFormatter {
     fun request2Item(request: Request): HashMap<String, Any?> {
 
         val item: HashMap<String, Any?> = HashMap()
-        item["req_request"] = request.req
         item["session"] = request.session
         item["index"] = request.index
         item["action"] = request.action

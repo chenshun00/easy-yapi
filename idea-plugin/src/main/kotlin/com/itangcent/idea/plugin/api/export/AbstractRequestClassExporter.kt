@@ -26,7 +26,6 @@ import com.itangcent.intellij.jvm.*
 import com.itangcent.intellij.jvm.duck.DuckType
 import com.itangcent.intellij.jvm.element.ExplicitElement
 import com.itangcent.intellij.jvm.element.ExplicitMethod
-import com.itangcent.intellij.jvm.element.ExplicitMethodWithOutGenericInfo
 import com.itangcent.intellij.jvm.element.ExplicitParameter
 import com.itangcent.intellij.logger.Logger
 import com.itangcent.intellij.psi.ContextSwitchListener
@@ -513,32 +512,9 @@ abstract class AbstractRequestClassExporter : ClassExporter, Worker {
 
         val params = method.getParameters()
 
-        val findAnnMap = annotationHelper!!.findAnnMap(method.psi(), SpringClassName.API_ACTION)
-
-        val findAttr = findAnnMap?.get("request")
-        if (findAttr == null || findAttr === "request") {
-            if (method is ExplicitMethodWithOutGenericInfo) {
-                var name = method.name()
-                if (!name.endsWith("Request")) {
-                    name = "${name}Request";
-                }
-                requestHelper!!.setReq(request, name);
-            } else {
-                throw RuntimeException("method不是ExplicitMethodWithOutGenericInfo类型,当初测试未发现:${method.javaClass.simpleName}")
-            }
-        } else {
-            requestHelper!!.setReq(request, findAttr as String)
-        }
-
-        val session = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_SESSION)
-        if (session != null) {
-            requestHelper.setSession(request, true)
-        } else {
-            requestHelper.setSession(request, false)
-        }
-        val action = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_ACTION)
+        val action = annotationHelper!!.findAttrAsString(method.psi(), SpringClassName.API_ACTION)
                 ?: throw RuntimeException("请在方法${method.name()}上添加${SpringClassName.API_ACTION}注解,申明Action")
-        requestHelper.setAction(request, action)
+        requestHelper!!.setAction(request, action)
 
         val apiClassGroup = annotationHelper.findAttrAsString(method.psi(), SpringClassName.API_CLASS_GROUP, "session")
         if (apiClassGroup != null) {
